@@ -126,9 +126,8 @@ open class MyAggregateRepository : EventStoreRepository<MyAggregate>()
  Subscribers check it out on [Event Store documentation](http://docs.geteventstore.com/)
  
  ```kotlin
- @Service
- open class MyAggregateSubscriber(actorSystem: ActorSystem, springExtension: SpringExtension)
-     : PersistentAggregateSubscriber<MyAggregate>(actorSystem,springExtension)
+@Service
+open class MyAggregateSubscriber : PersistentAggregateSubscriber<MyAggregate>()
  ```
  
  And since someone need to handle the messages that will rise you should implement the 

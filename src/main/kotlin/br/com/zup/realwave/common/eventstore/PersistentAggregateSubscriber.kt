@@ -6,6 +6,7 @@ import eventstore.EventStream
 import eventstore.PersistentSubscriptionActor
 import eventstore.Settings
 import eventstore.tcp.ConnectionActor
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.lang.reflect.ParameterizedType
 
@@ -14,9 +15,10 @@ import java.lang.reflect.ParameterizedType
  * Created by cleber on 5/30/17.
  */
 @Component
-abstract class PersistentAggregateSubscriber<T : Aggregate>(var actorSystem: ActorSystem,
-                                                            var springExtension: SpringExtension) {
+abstract class PersistentAggregateSubscriber<T : Aggregate> {
 
+    @Autowired lateinit var actorSystem: ActorSystem
+    @Autowired lateinit var springExtension: SpringExtension
     fun start() {
 
         val connection = actorSystem.actorOf(ConnectionActor.getProps())
