@@ -1,0 +1,16 @@
+version: '2'
+services:
+ setup:
+    image: maven:3.5.0-jdk-8
+    volumes:
+      - .:/home/application
+    command: ["/home/application/run.sh"]
+    depends_on:
+      - event-store
+ event-store:
+   image: eventstore/eventstore
+   extra_hosts:
+     - "eventstore.com:127.0.0.1"
+   ports:
+     - "2113:2113"
+     - "1113:1113"
