@@ -5,7 +5,7 @@ hope at least!!!
 
 ## Setups
 first of all if you do want logging you should at a lot of places remove you **log4j** implementations autowired 
-dependencies like **logback-classic**
+dependencies like **logback-classic** and add the appropriate log implementation
 
 ```xml
 <dependency>
@@ -19,7 +19,14 @@ dependencies like **logback-classic**
     </exclusions>
 </dependency>
 ```
-        
+```xml
+<dependency>
+    <groupId>org.apache.logging.log4j</groupId>
+    <artifactId>log4j-slf4j-impl</artifactId>
+    <version>VERSION GOES HERE</version>
+</dependency>
+```
+
 talking about setup, your connection should be made Akka/Scala like, so on you resource add a `application.conf`
  
 ```
