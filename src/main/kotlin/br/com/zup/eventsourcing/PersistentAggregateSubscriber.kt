@@ -19,6 +19,7 @@ abstract class PersistentAggregateSubscriber<T : br.com.zup.eventsourcing.Aggreg
 
     @Autowired lateinit var actorSystem: ActorSystem
     @Autowired lateinit var springExtension: SpringExtension
+
     fun start() {
 
         val connection = actorSystem.actorOf(ConnectionActor.getProps())
@@ -27,7 +28,7 @@ abstract class PersistentAggregateSubscriber<T : br.com.zup.eventsourcing.Aggreg
 
         actorSystem.actorOf(PersistentSubscriptionActor.props(connection,
                 subscriptionListener, EventStream.`Id$`.`MODULE$`.apply(getGenericName()),
-                "stream-group", Settings.Default().defaultCredentials(), Settings.Default(), false))
+                "my-aggregate-subscription-group", Settings.Default().defaultCredentials(), Settings.Default(), false))
 
 
     }
