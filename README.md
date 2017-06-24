@@ -8,6 +8,8 @@ Initially we provide event persistence and subscription with [Event Store](http:
 ### Logs
 If you do want logging you should use **log4j**. That means you need to exclude dependencies like **logback-classic** (if you ar using spring-boot-starter for example), and add the appropriate log implementation:
 ```xml
+<dependencies>
+...
 <dependency>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter</artifactId>
@@ -24,6 +26,8 @@ If you do want logging you should use **log4j**. That means you need to exclude 
     <artifactId>log4j-slf4j-impl</artifactId>
     <version>VERSION GOES HERE</version>
 </dependency>
+...
+</dependencies>
 ```
 
 ### Connecting to EventStore

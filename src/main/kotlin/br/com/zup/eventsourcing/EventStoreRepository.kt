@@ -4,7 +4,12 @@ import akka.actor.Status
 import akka.util.Timeout
 import br.com.zup.eventsourcing.config.jsonToObject
 import br.com.zup.eventsourcing.config.objectToJson
-import eventstore.*
+import eventstore.EventData
+import eventstore.EventNumber
+import eventstore.ExpectedVersion
+import eventstore.ReadStreamEventsCompleted
+import eventstore.StreamNotFoundException
+import eventstore.WriteResult
 import eventstore.j.EsConnection
 import eventstore.j.EventDataBuilder
 import org.apache.logging.log4j.LogManager

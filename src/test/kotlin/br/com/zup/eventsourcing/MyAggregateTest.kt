@@ -5,13 +5,14 @@ import br.com.zup.eventsourcing.domain.ModifyEvent
 import br.com.zup.eventsourcing.domain.MyAggregate
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Test
 
 /**
  * Created by zacacj on 6/20/2017.
  */
 class MyAggregateTest {
 
-    @org.junit.Test
+    @Test
     fun createAggregate() {
         val id = java.util.UUID.randomUUID().toString()
         val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
@@ -21,7 +22,7 @@ class MyAggregateTest {
         assertEquals(-1, myAggregate.version.value)
     }
 
-    @org.junit.Test
+    @Test
     fun modifyAggregate() {
         val id = java.util.UUID.randomUUID().toString()
         val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
