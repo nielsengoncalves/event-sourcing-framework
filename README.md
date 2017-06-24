@@ -139,7 +139,14 @@ open class MyAggregateSubscriber : PersistentAggregateSubscriber<MyAggregate>()
  
  And since someone need to handle the messages that will rise you should implement the 
  `EventHandle` interface, we use Spring to inject it so annotate you implementation
+ 
+ To be better handle the subscriber does not start listening upon it's creation, you should call method `start()`. and 
+ for customization you can pass the subscription group name as the constructor parameter, if not it will try to listen to 
+ *YourAggregateSimpleClassName*SubscriptionGroup
+ 
+ #### Event Store not covered features
 
-
+Setup of things like enabling projection, creating projections, and creating subscription groups, on `run.sh` you can find
+some curl examples used to serve for our testing purposes 
 
 
