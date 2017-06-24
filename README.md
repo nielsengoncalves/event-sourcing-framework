@@ -1,12 +1,12 @@
-# Event Store connector for  :ocean:RealWave:ocean:
+# Event Sourcing Framework
 
-This is a lib to work with [Event Store](http://docs.geteventstore.com/). It's meant to facilitate integration...we 
-hope at least!!!
+This is a fremework meant to ease an [event sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) implementation on the JVM.
+Initially we provide event persistence and subscription with [Event Store](http://docs.geteventstore.com/) and [EventStore.JVM](https://github.com/EventStore/EventStore.JVM).
 
-## Setups
-first of all if you do want logging you should at a lot of places remove you **log4j** implementations autowired 
-dependencies like **logback-classic** and add the appropriate log implementation
+## EventStore.JVM setup
 
+### Logs
+If you do want logging you should use **log4j**. That means you need to exclude dependencies like **logback-classic** (if you ar using spring-boot-starter for example), and add the appropriate log implementation:
 ```xml
 <dependency>
     <groupId>org.springframework.boot</groupId>
@@ -18,8 +18,7 @@ dependencies like **logback-classic** and add the appropriate log implementation
         </exclusion>
     </exclusions>
 </dependency>
-```
-```xml
+
 <dependency>
     <groupId>org.apache.logging.log4j</groupId>
     <artifactId>log4j-slf4j-impl</artifactId>
@@ -27,8 +26,9 @@ dependencies like **logback-classic** and add the appropriate log implementation
 </dependency>
 ```
 
-talking about setup, your connection should be made Akka/Scala like, so on you resource add a `application.conf`
- 
+### Connecting to EventStore
+The connection is configured using Akka/Scala config file. Create a `application.conf` file on your resources directory:
+
 ```
 akka {
     loglevel = "INFO"
@@ -36,17 +36,16 @@ akka {
 }
 ```
  
- and if you'd like to create environment setup suit yourself but remember to include de **application.conf** for 
- instance this `qa.conf`
+ You can create environment specific configuration files, just remember to include the main **application.conf** in it. For 
+ instance, if you have a `qa.conf`, it should look like:
 
 ```
- # This is a Sales Manager early stage setup
 include "application"
 
 eventstore {
  # IP & port of Event Store
  address {
-  host = realwave-lab-eventstorecluster.azure.zup.com.br
+  host = 127.0.0.1
   port = 1112
  }
 
@@ -62,18 +61,15 @@ eventstore {
  }
 
  cluster {
-  dns = realwave-lab-eventstorecluster.azure.zup.com.br
-  external-gossip-port = 2114 }
+  dns = eventstore.cluster
+  external-gossip-port = 2114 
+ }
 }
 ```
-
-...and the last
-but not least to use your environment setup you need to start your application with 
-
+To use a specific environment you need to start your application with: 
 ```script
 -Dconfig.resource=file:/qa.conf
 ```
-
 or if it will be external to the application itself, then use this:
 
 ```script
@@ -85,13 +81,13 @@ or if it will be external to the application itself, then use this:
 ### As a Repository
 
 To implement the command flow you should make your aggregate root inherit from `Aggregate`, your events should inherit
- from `Event` and then you should implement your repository for the aggregate using the `EventStoreRepository`
+ from `Event` and then you should implement your repository for the aggregate using the `EventStoreRepository`.
  
 ```kotlin
 class CreateEvent(val aggregateId: AggregateId) : Event()
 ```
  
-The aggregate need to have the load method implemented so the repository can ask him to replay the events
+The aggregate needs to have the load method implemented so the repository can ask him to replay the events.
  ```kotlin
 class MyAggregate() : Aggregate() {
     constructor(aggregateId: AggregateId) : this() {
