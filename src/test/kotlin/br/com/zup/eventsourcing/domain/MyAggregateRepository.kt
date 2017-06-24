@@ -1,6 +1,6 @@
-package br.com.zup.realwave.common.eventstore.domain
+package br.com.zup.eventsourcing.domain
 
-import br.com.zup.realwave.common.eventstore.EventStoreRepository
+import br.com.zup.eventsourcing.EventStoreRepository
 import org.springframework.stereotype.Service
 
 /**

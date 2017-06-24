@@ -1,4 +1,4 @@
-package br.com.zup.realwave.common.eventstore.config
+package br.com.zup.eventsourcing.config
 
 import akka.actor.ActorSystem
 import eventstore.j.EsConnection
@@ -11,14 +11,14 @@ import org.springframework.context.annotation.Configuration
 
 
 @Configuration
-@ComponentScan(basePackages = arrayOf("br.com.zup.realwave.common.eventstore"))
+@ComponentScan(basePackages = arrayOf("br.com.zup.eventsourcing"))
 open class EventStoreConfig {
 
     @Autowired
     private val applicationContext: ApplicationContext? = null
 
     @Autowired
-    private val springExtension: SpringExtension? = null
+    private val springExtension: br.com.zup.eventsourcing.config.SpringExtension? = null
 
     @Bean
     open fun actorSystem(): akka.actor.ActorSystem {

@@ -1,4 +1,4 @@
-package br.com.zup.realwave.common.eventstore
+package br.com.zup.eventsourcing
 
 abstract class Aggregate {
 

@@ -1,8 +1,8 @@
-package br.com.zup.realwave.common.eventstore
+package br.com.zup.eventsourcing
 
-import br.com.zup.realwave.common.eventstore.config.BaseTest
-import br.com.zup.realwave.common.eventstore.domain.MyAggregate
-import br.com.zup.realwave.common.eventstore.domain.MyAggregateRepository
+import br.com.zup.eventsourcing.config.BaseTest
+import br.com.zup.eventsourcing.domain.MyAggregate
+import br.com.zup.eventsourcing.domain.MyAggregateRepository
 import eventstore.WrongExpectedVersionException
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -20,8 +20,8 @@ class MyAggregateRepositoryTest : BaseTest() {
     @Test
     fun saveMyAggregateCreate() {
         val id = UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
-        val metaData = MetaData()
+        val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
+        val metaData = br.com.zup.eventsourcing.MetaData()
         metaData.set("teste", "teste")
         val result = myAggregateRepository.save(myAggregate, metaData)
         assertEquals(id, result)
@@ -30,8 +30,8 @@ class MyAggregateRepositoryTest : BaseTest() {
     @Test
     fun saveMyAggregateCreateAndGet() {
         val id = UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
-        val metaData = MetaData()
+        val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
+        val metaData = br.com.zup.eventsourcing.MetaData()
         metaData.set("teste2", myAggregate)
         myAggregateRepository.save(myAggregate, metaData)
         val myAggregateGot = myAggregateRepository.get(myAggregate.id)
@@ -41,8 +41,8 @@ class MyAggregateRepositoryTest : BaseTest() {
     @Test
     fun createAndModifyAggregate() {
         val id = UUID.randomUUID().toString()
-        var myAggregate = MyAggregate(AggregateId(id))
-        val metaData = MetaData()
+        var myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
+        val metaData = br.com.zup.eventsourcing.MetaData()
         metaData.set("teste2", myAggregate)
         myAggregateRepository.save(myAggregate, metaData)
         //right now needed, talk to maybe change
@@ -57,10 +57,10 @@ class MyAggregateRepositoryTest : BaseTest() {
     @Test(expected = WrongExpectedVersionException::class)
     fun saveWithWrongExpectedVersion() {
         val id = UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
-        val metaData = MetaData()
+        val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
+        val metaData = br.com.zup.eventsourcing.MetaData()
         metaData.set("teste2", myAggregate)
-        myAggregate.version = AggregateVersion(3)
+        myAggregate.version = br.com.zup.eventsourcing.AggregateVersion(3)
         myAggregateRepository.save(myAggregate, metaData)
     }
 }

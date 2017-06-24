@@ -1,22 +1,19 @@
-package br.com.zup.realwave.common.eventstore.domain
+package br.com.zup.eventsourcing.domain
 
-import br.com.zup.realwave.common.eventstore.Aggregate
-import br.com.zup.realwave.common.eventstore.AggregateId
-import br.com.zup.realwave.common.eventstore.AggregateVersion
-import br.com.zup.realwave.common.eventstore.Event
+import br.com.zup.eventsourcing.Event
 
 /**
  * Created by zacacj on 6/20/2017.
  */
-class MyAggregate() : Aggregate() {
+class MyAggregate() : br.com.zup.eventsourcing.Aggregate() {
     var status: String = "OPENED"
 
-    constructor(aggregateId: AggregateId) : this() {
+    constructor(aggregateId: br.com.zup.eventsourcing.AggregateId) : this() {
 
         applyChange(CreateEvent(aggregateId))
     }
 
-    override fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate {
+    override fun load(events: List<Event>, aggregateVersion: br.com.zup.eventsourcing.AggregateVersion): br.com.zup.eventsourcing.Aggregate {
         for (event: Event in events) {
             applyChange(event)
         }

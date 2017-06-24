@@ -1,7 +1,7 @@
-package br.com.zup.realwave.common.eventstore
+package br.com.zup.eventsourcing
 
-import br.com.zup.realwave.common.eventstore.domain.CreateEvent
-import br.com.zup.realwave.common.eventstore.domain.ModifyEvent
+import br.com.zup.eventsourcing.domain.CreateEvent
+import br.com.zup.eventsourcing.domain.ModifyEvent
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.util.*
@@ -13,7 +13,7 @@ class AddEventTest {
     @Test
     fun createAddEvent() {
         val id = UUID.randomUUID().toString()
-        val myAddEvent = CreateEvent(AggregateId(id))
+        val myAddEvent = CreateEvent(br.com.zup.eventsourcing.AggregateId(id))
 
         assertEquals(CreateEvent::class.java.canonicalName, myAddEvent.retrieveEventType().value)
         //language=JSON

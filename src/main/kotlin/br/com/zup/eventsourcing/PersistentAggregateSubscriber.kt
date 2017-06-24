@@ -1,7 +1,7 @@
-package br.com.zup.realwave.common.eventstore
+package br.com.zup.eventsourcing
 
 import akka.actor.ActorSystem
-import br.com.zup.realwave.common.eventstore.config.SpringExtension
+import br.com.zup.eventsourcing.config.SpringExtension
 import eventstore.EventStream
 import eventstore.PersistentSubscriptionActor
 import eventstore.Settings
@@ -15,7 +15,7 @@ import java.lang.reflect.ParameterizedType
  * Created by cleber on 5/30/17.
  */
 @Component
-abstract class PersistentAggregateSubscriber<T : Aggregate> {
+abstract class PersistentAggregateSubscriber<T : br.com.zup.eventsourcing.Aggregate> {
 
     @Autowired lateinit var actorSystem: ActorSystem
     @Autowired lateinit var springExtension: SpringExtension
@@ -23,7 +23,7 @@ abstract class PersistentAggregateSubscriber<T : Aggregate> {
 
         val connection = actorSystem.actorOf(ConnectionActor.getProps())
 
-        val subscriptionListener = actorSystem.actorOf(springExtension.props(PersistentSubscriptionListener.BEAN_NAME))
+        val subscriptionListener = actorSystem.actorOf(springExtension.props(br.com.zup.eventsourcing.PersistentSubscriptionListener.Companion.BEAN_NAME))
 
         actorSystem.actorOf(PersistentSubscriptionActor.props(connection,
                 subscriptionListener, EventStream.`Id$`.`MODULE$`.apply(getGenericName()),

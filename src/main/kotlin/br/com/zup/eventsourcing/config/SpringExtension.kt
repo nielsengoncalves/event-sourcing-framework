@@ -1,4 +1,4 @@
-package br.com.zup.realwave.common.eventstore.config
+package br.com.zup.eventsourcing.config
 
 import akka.actor.Extension
 import akka.actor.Props

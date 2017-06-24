@@ -1,10 +1,10 @@
-package br.com.zup.realwave.common.eventstore
+package br.com.zup.eventsourcing
 
-import br.com.zup.realwave.common.eventstore.config.BaseTest
-import br.com.zup.realwave.common.eventstore.domain.MyAggregate
-import br.com.zup.realwave.common.eventstore.domain.MyAggregateRepository
-import br.com.zup.realwave.common.eventstore.domain.MyAggregateSubscriber
-import br.com.zup.realwave.common.eventstore.domain.MyEventHandler
+import br.com.zup.eventsourcing.config.BaseTest
+import br.com.zup.eventsourcing.domain.MyAggregate
+import br.com.zup.eventsourcing.domain.MyAggregateRepository
+import br.com.zup.eventsourcing.domain.MyAggregateSubscriber
+import br.com.zup.eventsourcing.domain.MyEventHandler
 import org.junit.Test
 import org.mockito.Mockito
 import org.springframework.beans.factory.annotation.Autowired

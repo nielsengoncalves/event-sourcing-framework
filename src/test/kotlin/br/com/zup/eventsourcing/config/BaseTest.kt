@@ -1,4 +1,4 @@
-package br.com.zup.realwave.common.eventstore.config
+package br.com.zup.eventsourcing.config
 
 import org.junit.runner.RunWith
 import org.springframework.boot.test.context.SpringBootTest

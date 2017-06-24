@@ -4,12 +4,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>br.com.zup.realwave.common</groupId>
-    <artifactId>rw-event-store</artifactId>
+    <groupId>br.com.zup</groupId>
+    <artifactId>event-sourcing-framework</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>br.com.zup.realwave.common rw-event-store</name>
+    <name>event-sourcing-framework</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -51,11 +51,6 @@
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-kotlin</artifactId>
             <version>${jackson.kotling.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>br.com.zup.realwave.common</groupId>
-            <artifactId>realwave-exception-handler</artifactId>
-            <version>${realwave.exception.handler.version}</version>
         </dependency>
 
         <dependency>
@@ -102,23 +97,6 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-    <repositories>
-        <repository>
-            <id>internal-zup</id>
-            <name>Internal Release Repository</name>
-            <url>http://archiva.aws.zup.com.br/repository/internal/</url>
-        </repository>
-
-        <repository>
-            <id>snapshots-zup</id>
-            <name>Internal Snapshot Repository</name>
-            <url>http://archiva.aws.zup.com.br/repository/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>

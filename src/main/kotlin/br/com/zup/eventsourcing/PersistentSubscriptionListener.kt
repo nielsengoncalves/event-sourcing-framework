@@ -1,8 +1,8 @@
-package br.com.zup.realwave.common.eventstore
+package br.com.zup.eventsourcing
 
 import akka.actor.AbstractActor
 import akka.event.Logging
-import br.com.zup.realwave.common.eventstore.config.jsonToObject
+import br.com.zup.eventsourcing.config.jsonToObject
 import eventstore.PersistentSubscriptionActor
 import eventstore.ResolvedEvent
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
@@ -37,11 +37,11 @@ class PersistentSubscriptionListener(val eventHandler: EventHandler) :
 
     fun onReceive(resolvedEvent: ResolvedEvent) {
         val obj = getEventData(resolvedEvent).jsonToObject(Class.forName(getEventDataClassName(resolvedEvent)))
-        val aggregateId = AggregateId(getAggregateId(resolvedEvent))
-        val metaData = getEventMetaData(resolvedEvent).jsonToObject(MetaData::class.java)
+        val aggregateId = br.com.zup.eventsourcing.AggregateId(getAggregateId(resolvedEvent))
+        val metaData = getEventMetaData(resolvedEvent).jsonToObject(br.com.zup.eventsourcing.MetaData::class.java)
         val event = obj as Event
-        eventHandler.handle(aggregateId,event, metaData, AggregateVersion(resolvedEvent.linkedEvent()
-                .number().value()))
+        eventHandler.handle(aggregateId, event, metaData, br.com.zup.eventsourcing.AggregateVersion(resolvedEvent.linkedEvent()
+                                                                                                            .number().value()))
         sender.tell(PersistentSubscriptionActor.ManualAck(resolvedEvent.linkEvent().data().eventId()), self)
     }
 
