@@ -15,7 +15,7 @@ import java.lang.reflect.ParameterizedType
  * Created by cleber on 5/30/17.
  */
 @Component
-abstract class PersistentAggregateSubscriber<T : br.com.zup.eventsourcing.Aggregate> {
+abstract class PersistentAggregateSubscriber<T : br.com.zup.eventsourcing.Aggregate>(val subscriptionGroupName : String = "") {
 
     @Autowired lateinit var actorSystem: ActorSystem
     @Autowired lateinit var springExtension: SpringExtension
@@ -26,11 +26,21 @@ abstract class PersistentAggregateSubscriber<T : br.com.zup.eventsourcing.Aggreg
 
         val subscriptionListener = actorSystem.actorOf(springExtension.props(br.com.zup.eventsourcing.PersistentSubscriptionListener.Companion.BEAN_NAME))
 
+        val groupName = getGroupName(subscriptionGroupName)
         actorSystem.actorOf(PersistentSubscriptionActor.props(connection,
                 subscriptionListener, EventStream.`Id$`.`MODULE$`.apply(getGenericName()),
-                "my-aggregate-subscription-group", Settings.Default().defaultCredentials(), Settings.Default(), false))
+                groupName, Settings.Default().defaultCredentials(), Settings.Default(), false))
 
 
+    }
+
+    private fun  getGroupName(subscriptionGroupName: String): String? {
+        if (subscriptionGroupName.isBlank()) {
+            return getGenericName() + "SubscriptionGroup"
+        }
+        else {
+            return subscriptionGroupName
+        }
     }
 
     private fun getGenericName(): String {
