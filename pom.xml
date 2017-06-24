@@ -19,7 +19,6 @@
         <spring.version>4.3.8.RELEASE</spring.version>
         <jackson.version>2.8.8</jackson.version>
         <realwave.exception.handler.version>1.0.0-SNAPSHOT</realwave.exception.handler.version>
-        <jackson.kotling.version>2.8.9</jackson.kotling.version>
         <spring.boot.starter.test.version>1.5.3.RELEASE</spring.boot.starter.test.version>
         <log4j.core.version>2.6.2</log4j.core.version>
         <log4j.impl.version>2.7</log4j.impl.version>
@@ -46,11 +45,6 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-kotlin</artifactId>
-            <version>${jackson.kotling.version}</version>
         </dependency>
 
         <dependency>
@@ -107,6 +101,14 @@
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
                 <version>${kotlin.version}</version>
+                <configuration>
+                    <compilerPlugins>
+                        <plugin>no-arg</plugin>
+                    </compilerPlugins>
+                    <pluginOptions>
+                        <option>no-arg:annotation=br.com.zup.eventsourcing.util.NoArgsConstructor</option>
+                    </pluginOptions>
+                </configuration>
                 <executions>
                     <execution>
                         <id>compile</id>
@@ -123,6 +125,14 @@
                         </goals>
                     </execution>
                 </executions>
+
+                <dependencies>
+                    <dependency>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-maven-noarg</artifactId>
+                        <version>${kotlin.version}</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>

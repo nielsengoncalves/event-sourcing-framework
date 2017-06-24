@@ -1,12 +1,11 @@
 package br.com.zup.eventsourcing.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.KotlinModule
 
 private object JacksonExtension {
 
     val jacksonObjectMapper: ObjectMapper by lazy {
-        ObjectMapper().registerModule(KotlinModule())
+        ObjectMapper()
     }
 
 }
