@@ -10,5 +10,5 @@ import org.springframework.context.annotation.Import
 
 @Configuration
 @Import(br.com.zup.eventsourcing.config.EventStoreConfig::class)
-@ComponentScan(basePackages = arrayOf("br.com.zup.realwave.common.eventstore"))
+@ComponentScan(basePackages = arrayOf("br.com.zup.eventsourcing"))
 open class SpringConfigTest

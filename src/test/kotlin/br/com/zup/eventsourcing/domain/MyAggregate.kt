@@ -1,19 +1,22 @@
 package br.com.zup.eventsourcing.domain
 
+import br.com.zup.eventsourcing.Aggregate
+import br.com.zup.eventsourcing.AggregateId
+import br.com.zup.eventsourcing.AggregateVersion
 import br.com.zup.eventsourcing.Event
 
 /**
  * Created by zacacj on 6/20/2017.
  */
-class MyAggregate() : br.com.zup.eventsourcing.Aggregate() {
+class MyAggregate() : Aggregate() {
     var status: String = "OPENED"
 
-    constructor(aggregateId: br.com.zup.eventsourcing.AggregateId) : this() {
+    constructor(aggregateId: AggregateId) : this() {
 
         applyChange(CreateEvent(aggregateId))
     }
 
-    override fun load(events: List<Event>, aggregateVersion: br.com.zup.eventsourcing.AggregateVersion): br.com.zup.eventsourcing.Aggregate {
+    override fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate {
         for (event: Event in events) {
             applyChange(event)
         }
