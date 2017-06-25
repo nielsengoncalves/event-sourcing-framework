@@ -37,10 +37,10 @@ class PersistentSubscriptionListener(val eventHandler: EventHandler) :
 
     fun onReceive(resolvedEvent: ResolvedEvent) {
         val obj = getEventData(resolvedEvent).jsonToObject(Class.forName(getEventDataClassName(resolvedEvent)))
-        val aggregateId = br.com.zup.eventsourcing.AggregateId(getAggregateId(resolvedEvent))
-        val metaData = getEventMetaData(resolvedEvent).jsonToObject(br.com.zup.eventsourcing.MetaData::class.java)
+        val aggregateId = AggregateId(getAggregateId(resolvedEvent))
+        val metaData = getEventMetaData(resolvedEvent).jsonToObject(MetaData::class.java)
         val event = obj as Event
-        eventHandler.handle(aggregateId, event, metaData, br.com.zup.eventsourcing.AggregateVersion(resolvedEvent.linkedEvent()
+        eventHandler.handle(aggregateId, event, metaData, AggregateVersion(resolvedEvent.linkedEvent()
                                                                                                             .number().value()))
         sender.tell(PersistentSubscriptionActor.ManualAck(resolvedEvent.linkEvent().data().eventId()), self)
     }

@@ -22,13 +22,13 @@ import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
 
-abstract class EventStoreRepository<T : br.com.zup.eventsourcing.Aggregate> {
+abstract class EventStoreRepository<T : Aggregate> {
 
     @Autowired lateinit var connection: EsConnection
     private val LOG = LogManager.getLogger(this.javaClass)
     private val myUUID = UUID.randomUUID()
 
-    fun save(aggregate: T, metaData: br.com.zup.eventsourcing.MetaData): String {
+    fun save(aggregate: T, metaData: MetaData) {
         LOG.debug("receive save message with aggregate: $aggregate and meta data: $metaData")
         try {
             sendSyncSaveEvent(aggregate, metaData)
@@ -37,10 +37,9 @@ abstract class EventStoreRepository<T : br.com.zup.eventsourcing.Aggregate> {
             throw e
         }
         LOG.debug("aggregate saved: $aggregate and meta data: $metaData")
-        return aggregate.id.value
     }
 
-    fun get(id: br.com.zup.eventsourcing.AggregateId): T {
+    fun get(id: AggregateId): T {
         LOG.debug("receive get message with aggregateId: $id")
         try {
             val timeout = Timeout(Duration.create(60, "seconds"))
@@ -49,11 +48,10 @@ abstract class EventStoreRepository<T : br.com.zup.eventsourcing.Aggregate> {
                     true,
                     null)
             val message = Await.result(future, timeout.duration())
-            if (message is ReadStreamEventsCompleted){
+            if (message is ReadStreamEventsCompleted) {
                 LOG.debug("got message with aggregateId: $id")
                 return replayPurchaseOrderAggregate(message)
-            }
-            else {
+            } else {
                 LOG.error("was not able to find and aggregate with aggregateId: $id")
                 throw NotFoundException()
             }
@@ -79,7 +77,7 @@ abstract class EventStoreRepository<T : br.com.zup.eventsourcing.Aggregate> {
 
         if (events.size > 0) {
             val aggregate = aggregateClass.newInstance()
-            (aggregate as T).load(events, br.com.zup.eventsourcing.AggregateVersion(version))
+            (aggregate as T).load(events, AggregateVersion(version))
             return aggregate
         } else {
             LOG.error("stream was empty: $readStreamEventsCompleted")
@@ -87,7 +85,7 @@ abstract class EventStoreRepository<T : br.com.zup.eventsourcing.Aggregate> {
         }
     }
 
-    private fun sendSyncSaveEvent(aggregate: T, metaData: br.com.zup.eventsourcing.MetaData) {
+    private fun sendSyncSaveEvent(aggregate: T, metaData: MetaData) {
         val timeout = Timeout(Duration.create(60, "seconds"))
 
         val eventData = EventDataBuilder(aggregate.event.retrieveEventType().value)
@@ -103,11 +101,11 @@ abstract class EventStoreRepository<T : br.com.zup.eventsourcing.Aggregate> {
                 + aggregate.id
                 .value, getExceptedVersion(aggregate.version.value), items, null, false)
         val message = Await.result(future, timeout.duration())
-        validateSaveMessageResult(aggregate,message)
+        validateSaveMessageResult(aggregate, message)
 
     }
 
-    private fun validateSaveMessageResult(aggregate: T,message: Any?) {
+    private fun validateSaveMessageResult(aggregate: T, message: Any?) {
         if (message == null) {
             val aggregateGot = get(aggregate.id)
             if (aggregateGot.version.value == aggregate.version.value + 1)

@@ -15,7 +15,7 @@ class MyAggregateTest {
     @Test
     fun createAggregate() {
         val id = java.util.UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
+        val myAggregate = MyAggregate(AggregateId(id))
         assertTrue(myAggregate.event is CreateEvent)
         assertEquals(id, myAggregate.id.value)
         assertEquals("OPENED", myAggregate.status)
@@ -25,7 +25,7 @@ class MyAggregateTest {
     @Test
     fun modifyAggregate() {
         val id = java.util.UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(br.com.zup.eventsourcing.AggregateId(id))
+        val myAggregate = MyAggregate(AggregateId(id))
         myAggregate.modify()
         assertTrue(myAggregate.event is ModifyEvent)
         assertEquals(id, myAggregate.id.value)

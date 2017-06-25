@@ -5,8 +5,8 @@ import br.com.zup.eventsourcing.config.objectToJson
 
 abstract class Event {
     fun retrieveEventType(): EventType = EventType(this.javaClass.canonicalName)
-    fun retrieveJsonData(): br.com.zup.eventsourcing.JsonData {
-        return br.com.zup.eventsourcing.JsonData(this.objectToJson())
+    fun retrieveJsonData(): JsonData {
+        return JsonData(this.objectToJson())
     }
 }
 

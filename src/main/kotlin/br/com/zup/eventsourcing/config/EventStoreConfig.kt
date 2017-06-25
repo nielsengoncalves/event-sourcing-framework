@@ -18,7 +18,7 @@ open class EventStoreConfig {
     private val applicationContext: ApplicationContext? = null
 
     @Autowired
-    private val springExtension: br.com.zup.eventsourcing.config.SpringExtension? = null
+    private val springExtension: SpringExtension? = null
 
     @Bean
     open fun actorSystem(): akka.actor.ActorSystem {

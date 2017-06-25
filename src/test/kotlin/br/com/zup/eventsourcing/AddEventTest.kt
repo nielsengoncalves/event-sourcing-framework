@@ -13,7 +13,7 @@ class AddEventTest {
     @Test
     fun createAddEvent() {
         val id = UUID.randomUUID().toString()
-        val myAddEvent = CreateEvent(br.com.zup.eventsourcing.AggregateId(id))
+        val myAddEvent = CreateEvent(AggregateId(id))
 
         assertEquals(CreateEvent::class.java.canonicalName, myAddEvent.retrieveEventType().value)
         //language=JSON
