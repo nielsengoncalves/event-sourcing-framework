@@ -20,7 +20,7 @@ abstract class PersistentAggregateSubscriber<T : Aggregate>(val subscriptionGrou
     @Autowired lateinit var actorSystem: ActorSystem
     @Autowired lateinit var springExtension: SpringExtension
 
-    fun start() {
+    open fun start() {
 
         val connection = actorSystem.actorOf(ConnectionActor.getProps())
 

@@ -110,6 +110,7 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
                 + aggregate.id
                 .value, getExceptedVersion(aggregate.version.value), items, null, false)
         val message = Await.result(future, timeout.duration())
+
         validateSaveMessageResult(aggregate, message)
 
     }
