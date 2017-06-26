@@ -92,22 +92,19 @@
         </dependency>
     </dependencies>
 
-    <repositories>
+    <distributionManagement>
         <repository>
             <id>internal-zup</id>
             <name>Internal Release Repository</name>
             <url>http://archiva.aws.zup.com.br/repository/internal/</url>
         </repository>
 
-        <repository>
+        <snapshotRepository>
             <id>snapshots-zup</id>
             <name>Internal Snapshot Repository</name>
             <url>http://archiva.aws.zup.com.br/repository/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
+        </snapshotRepository>
+    </distributionManagement>
 
     <build>
         <sourceDirectory>src/main/kotlin</sourceDirectory>
