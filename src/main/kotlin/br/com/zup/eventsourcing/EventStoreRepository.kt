@@ -22,13 +22,20 @@ import java.nio.charset.Charset
 import java.util.*
 import kotlin.collections.ArrayList
 
-abstract class EventStoreRepository<T : Aggregate> {
+
+abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
 
     @Autowired lateinit var connection: EsConnection
     private val LOG = LogManager.getLogger(this.javaClass)
     private val myUUID = UUID.randomUUID()
 
-    fun save(aggregate: T, metaData: MetaData) {
+
+    override fun save(aggregate: T) {
+        return save(aggregate, MetaData())
+    }
+
+    override fun save(aggregate: T, metaData: MetaData) {
+
         LOG.debug("receive save message with aggregate: $aggregate and meta data: $metaData")
         try {
             sendSyncSaveEvent(aggregate, metaData)
@@ -39,7 +46,9 @@ abstract class EventStoreRepository<T : Aggregate> {
         LOG.debug("aggregate saved: $aggregate and meta data: $metaData")
     }
 
-    fun get(id: AggregateId): T {
+
+    override fun get(id: AggregateId): T {
+
         LOG.debug("receive get message with aggregateId: $id")
         try {
             val timeout = Timeout(Duration.create(60, "seconds"))
@@ -141,8 +150,8 @@ abstract class EventStoreRepository<T : Aggregate> {
         return ((javaClass
                 .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).canonicalName
     }
+
+    class NotFoundException : Throwable()
 }
 
-class NotFoundException : Throwable() {
 
-}
