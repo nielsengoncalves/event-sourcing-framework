@@ -40,9 +40,15 @@ class PersistentSubscriptionListener(val eventHandler: EventHandler) :
         val aggregateId = AggregateId(getAggregateId(resolvedEvent))
         val metaData = getEventMetaData(resolvedEvent).jsonToObject(MetaData::class.java)
         val event = obj as Event
-        eventHandler.handle(aggregateId, event, metaData, AggregateVersion(resolvedEvent.linkedEvent()
-                                                                                                            .number().value()))
-        sender.tell(PersistentSubscriptionActor.ManualAck(resolvedEvent.linkEvent().data().eventId()), self)
+        try {
+            eventHandler.handle(aggregateId, event, metaData, AggregateVersion(resolvedEvent.linkedEvent().number().value()))
+            sender.tell(PersistentSubscriptionActor.ManualAck(resolvedEvent.linkEvent().data().eventId()), self)
+        } catch(e: Exception) {
+            log.error("retrying event: $resolvedEvent")
+            sender.tell(PersistentSubscriptionActor.ManualNak(resolvedEvent.linkEvent().data().eventId()), self)
+
+        }
+
     }
 
     private fun  getAggregateId(resolvedEvent: ResolvedEvent): String {

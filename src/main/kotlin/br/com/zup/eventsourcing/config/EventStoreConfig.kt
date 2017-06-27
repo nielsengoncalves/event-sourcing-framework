@@ -24,14 +24,9 @@ open class EventStoreConfig {
     open fun actorSystem(): akka.actor.ActorSystem {
 
         val system = ActorSystem
-                .create("AkkaEventStore", akkaConfiguration())
+                .create("AkkaEventStore")
         springExtension!!.initialize(applicationContext!!)
         return system
-    }
-
-    @Bean
-    open fun akkaConfiguration(): com.typesafe.config.Config {
-        return com.typesafe.config.ConfigFactory.load()
     }
 
     @Bean
