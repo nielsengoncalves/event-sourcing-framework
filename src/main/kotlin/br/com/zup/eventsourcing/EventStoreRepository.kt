@@ -4,7 +4,6 @@ import akka.actor.Status
 import akka.util.Timeout
 import br.com.zup.eventsourcing.config.jsonToObject
 import br.com.zup.eventsourcing.config.objectToJson
-import eventstore.EventData
 import eventstore.EventNumber
 import eventstore.ExpectedVersion
 import eventstore.ReadStreamEventsCompleted
@@ -24,9 +23,9 @@ import kotlin.collections.ArrayList
 
 
 abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
+    private val LOG = LogManager.getLogger(this.javaClass)
 
     @Autowired lateinit var connection: EsConnection
-    private val LOG = LogManager.getLogger(this.javaClass)
     private val myUUID = UUID.randomUUID()
 
 
@@ -38,7 +37,7 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
 
         LOG.debug("receive save message with aggregate: $aggregate and meta data: $metaData")
         try {
-            sendSyncSaveEvent(aggregate, metaData)
+            saveEventsSynchronously(aggregate, metaData)
         } catch (e: Exception) {
             LOG.error("error saving aggregate: $aggregate and meta data: $metaData", e)
             throw e
@@ -53,9 +52,9 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
         try {
             val timeout = Timeout(Duration.create(60, "seconds"))
             val future = connection.readStreamEventsForward(getGenericName() + "-" + id.value, EventNumber.Exact(0),
-                    4000,
-                    true,
-                    null)
+                                                            4000,
+                                                            true,
+                                                            null)
             val message = Await.result(future, timeout.duration())
             if (message is ReadStreamEventsCompleted) {
                 LOG.debug("got message with aggregateId: $id")
@@ -94,25 +93,23 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
         }
     }
 
-    private fun sendSyncSaveEvent(aggregate: T, metaData: MetaData) {
+    private fun saveEventsSynchronously(aggregate: T, metaData: MetaData) {
         val timeout = Timeout(Duration.create(60, "seconds"))
-
-        val eventData = EventDataBuilder(aggregate.event.retrieveEventType().value)
-                .eventId(myUUID)
-                .jsonData(aggregate.event.retrieveJsonData().data)
-                .jsonMetadata(metaData.objectToJson())
-                .build()
-
-        val items: MutableSet<EventData> = HashSet()
-        items.add(eventData)
-
-        val future: Future<WriteResult> = connection.writeEvents(aggregate.javaClass.simpleName + '-'
-                + aggregate.id
-                .value, getExceptedVersion(aggregate.version.value), items, null, false)
+        val items = aggregate.events.map { event ->
+            EventDataBuilder(event.retrieveEventType().value)
+                    .eventId(myUUID)
+                    .jsonData(event.retrieveJsonData().data)
+                    .jsonMetadata(metaData.objectToJson())
+                    .build()
+        }
+        val future: Future<WriteResult> = connection.writeEvents(
+                "${aggregate.javaClass.simpleName}-${aggregate.id.value}",
+                getExceptedVersion(aggregate.version.value),
+                items,
+                null,
+                false)
         val message = Await.result(future, timeout.duration())
-
         validateSaveMessageResult(aggregate, message)
-
     }
 
     private fun validateSaveMessageResult(aggregate: T, message: Any?) {
