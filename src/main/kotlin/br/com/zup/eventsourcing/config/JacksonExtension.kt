@@ -1,11 +1,18 @@
 package br.com.zup.eventsourcing.config
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
+import java.lang.Compiler.disable
+import com.fasterxml.jackson.datatype.jsr310.JSR310Module
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+
 
 private object JacksonExtension {
 
     val jacksonObjectMapper: ObjectMapper by lazy {
-        ObjectMapper()
+        val mapper = ObjectMapper()
+        mapper.registerModule(JavaTimeModule())
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
     }
 
 }

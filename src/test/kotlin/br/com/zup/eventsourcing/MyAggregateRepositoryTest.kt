@@ -40,17 +40,20 @@ class MyAggregateRepositoryTest : BaseTest() {
     @Test
     fun createAndModifyAggregate() {
         val id = UUID.randomUUID().toString()
+
         var myAggregate = MyAggregate(AggregateId(id))
+        myAggregate.modify()
+        myAggregate.modify()
         val metaData = MetaData()
         metaData.set("teste2", myAggregate)
         myAggregateRepository.save(myAggregate, metaData)
-        //right now needed, talk to maybe change
-        myAggregate = myAggregateRepository.get(myAggregate.id)
-        myAggregate.modify()
-        myAggregateRepository.save(myAggregate, metaData)
-        val myAggregateGot = myAggregateRepository.get(myAggregate.id)
-        assertEquals(myAggregate, myAggregateGot)
-        assertEquals("ModifyEvent", myAggregateGot.status)
+
+        val loadedFromEventStore = myAggregateRepository.get(myAggregate.id)
+
+        assertEquals(myAggregate, loadedFromEventStore)
+        assertEquals("ModifyEvent", loadedFromEventStore.status)
+        assertEquals(2, loadedFromEventStore.modificationHistory.size)
+        assertEquals(2, loadedFromEventStore.version.value)
     }
 
     @Test(expected = WrongExpectedVersionException::class)
@@ -62,4 +65,5 @@ class MyAggregateRepositoryTest : BaseTest() {
         myAggregate.version = AggregateVersion(3)
         myAggregateRepository.save(myAggregate, metaData)
     }
+
 }
