@@ -11,13 +11,20 @@ abstract class Aggregate {
     lateinit var event: Event
     var events: MutableList<Event> = ArrayList()
 
-    abstract fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate
     abstract fun applyEvent(event: Event)
+
+    fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate {
+        for (event: Event in events) {
+            applyChange(event)
+        }
+        version = aggregateVersion
+        return this
+    }
 
     fun applyChange(event: Event) {
         LOG.debug("Applying event: {}", event)
         this.event = event
-        events.add(event)
+        this.events.add(event)
 
         applyEvent(event)
     }

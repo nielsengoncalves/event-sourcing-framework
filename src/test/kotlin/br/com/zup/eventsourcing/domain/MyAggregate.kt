@@ -20,14 +20,6 @@ class MyAggregate() : Aggregate() {
         applyChange(CreateEvent(aggregateId))
     }
 
-    override fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate {
-        for (event: Event in events) {
-            applyChange(event)
-        }
-        version = aggregateVersion
-        return this
-    }
-
     override fun applyEvent(event: Event) {
         if (event is CreateEvent) apply(event)
         if (event is ModifyEvent) apply(event)
