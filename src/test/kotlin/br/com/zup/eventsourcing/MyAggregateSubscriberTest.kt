@@ -34,8 +34,7 @@ class MyAggregateSubscriberTest : BaseTest() {
 
         metaData.set("teste", "teste")
         myAggregateRepository.save(myAggregate, metaData)
-        myAggregateSubscriber.start()
-        sleep(1000)
+        for (i in 0..10) sleep(100)
         assertNotNull( eventHandler.aggregateId)
         assertEquals(myAggregate.id, eventHandler.aggregateId)
     }
