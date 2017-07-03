@@ -15,7 +15,7 @@ abstract class Aggregate {
 
     fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate {
         for (event: Event in events) {
-            applyChangeWithoutStackEvents(event)
+            applyChangeWithoutStackingEvents(event)
         }
         version = aggregateVersion
         return this
@@ -33,7 +33,7 @@ abstract class Aggregate {
         events.clear()
     }
 
-    private fun applyChangeWithoutStackEvents(event: Event) {
+    private fun applyChangeWithoutStackingEvents(event: Event) {
         applyEvent(event)
     }
 
