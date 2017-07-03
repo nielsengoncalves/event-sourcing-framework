@@ -52,9 +52,9 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
         try {
             val timeout = Timeout(Duration.create(60, "seconds"))
             val future = connection.readStreamEventsForward(getGenericName() + "-" + id.value, EventNumber.Exact(0),
-                                                            4000,
-                                                            true,
-                                                            null)
+                    4000,
+                    true,
+                    null)
             val message = Await.result(future, timeout.duration())
             if (message is ReadStreamEventsCompleted) {
                 LOG.debug("got message with aggregateId: $id")
@@ -94,34 +94,38 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
     }
 
     private fun saveEventsSynchronously(aggregate: T, metaData: MetaData) {
-        val timeout = Timeout(Duration.create(60, "seconds"))
-        val items = aggregate.events.map { event ->
-            EventDataBuilder(event.retrieveEventType().value)
-                    .eventId(myUUID)
-                    .jsonData(event.retrieveJsonData().data)
-                    .jsonMetadata(metaData.objectToJson())
-                    .build()
+        if (aggregate.events.size > 0) {
+            val timeout = Timeout(Duration.create(60, "seconds"))
+            val items = aggregate.events.map { event ->
+                EventDataBuilder(event.retrieveEventType().value)
+                        .eventId(myUUID)
+                        .jsonData(event.retrieveJsonData().data)
+                        .jsonMetadata(metaData.objectToJson())
+                        .build()
+            }
+            val future: Future<WriteResult> = connection.writeEvents(
+                    "${aggregate.javaClass.simpleName}-${aggregate.id.value}",
+                    getExceptedVersion(aggregate.version.value),
+                    items,
+                    null,
+                    false)
+            val message = Await.result(future, timeout.duration())
+            validateSaveMessageResult(aggregate, message)
         }
-        val future: Future<WriteResult> = connection.writeEvents(
-                "${aggregate.javaClass.simpleName}-${aggregate.id.value}",
-                getExceptedVersion(aggregate.version.value),
-                items,
-                null,
-                false)
-        val message = Await.result(future, timeout.duration())
-        validateSaveMessageResult(aggregate, message)
     }
 
     private fun validateSaveMessageResult(aggregate: T, message: Any?) {
         if (message == null) {
             val aggregateGot = get(aggregate.id)
-            if (aggregateGot.version.value == aggregate.version.value + 1)
+            if (aggregateGot.version.value == aggregate.version.value + 1) {
+                aggregate.clearEvents()
                 LOG.warn("is null, but we checked, the message is there, better look if server its ok: ")
-            else {
+            } else {
                 LOG.warn("is null, and I dont know why so check if server its ok: ")
                 throw InternalError()
             }
         } else if (message is WriteResult) {
+            aggregate.clearEvents()
             LOG.debug("on WriteResult: " + message.toString())
         } else if (message is Status.Failure) {
             LOG.error("on Status.Failure: " + message.toString())

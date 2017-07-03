@@ -24,6 +24,7 @@ class MyAggregateRepositoryTest : BaseTest() {
         val metaData = MetaData()
         metaData.set("teste", "teste")
         myAggregateRepository.save(myAggregate, metaData)
+        assertEquals(0, myAggregate.events.size)
     }
 
     @Test
@@ -35,6 +36,9 @@ class MyAggregateRepositoryTest : BaseTest() {
         myAggregateRepository.save(myAggregate, metaData)
         val myAggregateGot = myAggregateRepository.get(myAggregate.id)
         assertEquals(myAggregate, myAggregateGot)
+        assertEquals(0, myAggregate.events.size)
+        assertEquals(0, myAggregateGot.events.size)
+
     }
 
     @Test
@@ -54,6 +58,9 @@ class MyAggregateRepositoryTest : BaseTest() {
         assertEquals("ModifyEvent", loadedFromEventStore.status)
         assertEquals(2, loadedFromEventStore.modificationHistory.size)
         assertEquals(2, loadedFromEventStore.version.value)
+        assertEquals(0, myAggregate.events.size)
+        assertEquals(0, loadedFromEventStore.events.size)
+
     }
 
     @Test(expected = WrongExpectedVersionException::class)
@@ -64,6 +71,21 @@ class MyAggregateRepositoryTest : BaseTest() {
         metaData.set("teste2", myAggregate)
         myAggregate.version = AggregateVersion(3)
         myAggregateRepository.save(myAggregate, metaData)
+        assertEquals(1, myAggregate.events.size)
+
+    }
+
+
+    @Test
+    fun saveMyAggregateCreateNoModifyAndSaveAgain() {
+        val id = UUID.randomUUID().toString()
+        val myAggregate = MyAggregate(AggregateId(id))
+        val metaData = MetaData()
+        metaData.set("teste", "teste")
+        myAggregateRepository.save(myAggregate, metaData)
+        assertEquals(0, myAggregate.events.size)
+        myAggregateRepository.save(myAggregate, metaData)
+        assertEquals(0, myAggregate.events.size)
     }
 
 }

@@ -2,11 +2,9 @@ package br.com.zup.eventsourcing.domain
 
 import br.com.zup.eventsourcing.Aggregate
 import br.com.zup.eventsourcing.AggregateId
-import br.com.zup.eventsourcing.AggregateVersion
 import br.com.zup.eventsourcing.Event
 import br.com.zup.eventsourcing.util.NoArgsConstructor
 import java.time.LocalDateTime
-import java.util.*
 
 /**
  * Created by zacacj on 6/20/2017.
@@ -14,7 +12,7 @@ import java.util.*
 @NoArgsConstructor
 class MyAggregate() : Aggregate() {
     var status: String = "OPENED"
-    var modificationHistory: MutableSet<LocalDateTime> = mutableSetOf()
+    var modificationHistory: MutableList<LocalDateTime> = mutableListOf()
 
     constructor(aggregateId: AggregateId) : this() {
         applyChange(CreateEvent(aggregateId))
