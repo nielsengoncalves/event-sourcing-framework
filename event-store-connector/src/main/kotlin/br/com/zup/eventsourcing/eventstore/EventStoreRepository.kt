@@ -32,8 +32,6 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
     private val LOG = LogManager.getLogger(this.javaClass)
 
     @Autowired lateinit var connection: EsConnection
-    private val myUUID = UUID.randomUUID()
-
 
     override fun save(aggregate: T) {
         return save(aggregate, MetaData())
@@ -104,7 +102,7 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
             val timeout = Timeout(Duration.create(60, "seconds"))
             val items = aggregate.events.map { event ->
                 EventDataBuilder(event.retrieveEventType().value)
-                        .eventId(myUUID)
+                        .eventId(UUID.randomUUID())
                         .jsonData(event.retrieveJsonData().data)
                         .jsonMetadata(metaData.objectToJson())
                         .build()

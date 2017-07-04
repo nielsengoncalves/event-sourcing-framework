@@ -10,6 +10,7 @@
     <modules>
         <module>event-sourcing-core</module>
         <module>event-store-connector</module>
+        <module>relational-database-connector</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -27,6 +28,9 @@
         <log4j.core.version>2.6.2</log4j.core.version>
         <log4j.impl.version>2.7</log4j.impl.version>
         <akka.slf4j>2.5.1</akka.slf4j>
+        <hikari.cp.version>2.6.1</hikari.cp.version>
+        <postgresql.version>42.1.1</postgresql.version>
+        <oracle.version>11.2.0.4</oracle.version>
     </properties>
 
     <dependencyManagement>
@@ -44,6 +48,11 @@
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jdbc</artifactId>
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
@@ -92,6 +101,21 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring.boot.starter.test.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>${hikari.cp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>%{oracle.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
