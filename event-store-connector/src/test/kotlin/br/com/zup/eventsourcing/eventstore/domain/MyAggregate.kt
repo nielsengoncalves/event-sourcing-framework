@@ -3,10 +3,8 @@ package br.com.zup.eventsourcing.eventstore.domain
 import br.com.zup.eventsourcing.core.Aggregate
 import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.Event
-import br.com.zup.eventsourcing.core.util.NoArgsConstructor
 import java.time.LocalDateTime
 
-@NoArgsConstructor
 class MyAggregate() : Aggregate() {
     var status: String = "OPENED"
     var modificationHistory: MutableList<LocalDateTime> = mutableListOf()
