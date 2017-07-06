@@ -3,7 +3,7 @@ package br.com.zup.eventsourcing.core
 import br.com.zup.eventsourcing.core.util.NoArgsConstructor
 import org.apache.logging.log4j.LogManager
 
-abstract class Aggregate {
+abstract class AggregateRoot {
     private val LOG = LogManager.getLogger(this.javaClass)
 
     lateinit var id: AggregateId
@@ -13,7 +13,7 @@ abstract class Aggregate {
 
     abstract fun applyEvent(event: Event)
 
-    fun load(events: List<Event>, aggregateVersion: AggregateVersion): Aggregate {
+    fun load(events: List<Event>, aggregateVersion: AggregateVersion): AggregateRoot {
         for (event: Event in events) {
             applyChangeWithoutStackingEvents(event)
         }
@@ -41,7 +41,7 @@ abstract class Aggregate {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false
 
-        other as Aggregate
+        other as AggregateRoot
 
         if (!id.equals(other.id)) return false
 

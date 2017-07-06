@@ -6,4 +6,4 @@ import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 
 @Service
-class MyJdbcEventRepository(@Autowired jdbcTemplate: JdbcTemplate) : JdbcEventRepository<MyAggregate>(jdbcTemplate)
+class MyJdbcEventRepository(@Autowired jdbcTemplate: JdbcTemplate) : JdbcEventRepository<MyAggregateRoot>(jdbcTemplate)

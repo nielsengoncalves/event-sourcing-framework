@@ -1,7 +1,7 @@
 package br.com.zup.eventsourcing.relationaldb
 
-import br.com.zup.eventsourcing.core.Aggregate
 import br.com.zup.eventsourcing.core.AggregateId
+import br.com.zup.eventsourcing.core.AggregateRoot
 import br.com.zup.eventsourcing.core.AggregateVersion
 import br.com.zup.eventsourcing.core.Event
 import br.com.zup.eventsourcing.core.MetaData
@@ -14,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 import java.lang.reflect.ParameterizedType
 import java.sql.Types
-import java.util.*
 
 
-abstract class JdbcEventRepository<T : Aggregate> @Autowired constructor(val jdbcTemplate: JdbcTemplate) :
+abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val jdbcTemplate: JdbcTemplate) :
         Repository<T> {
 
     init {
@@ -100,7 +99,7 @@ abstract class JdbcEventRepository<T : Aggregate> @Autowired constructor(val jdb
             val sql = "insert into ${getGenericName()} ($ID_COLUMN, $AGGREGATE_ID_COLUMN, $VERSION_COLUMN, " +
                     "$EVENT_TYPE_COLUMN, $EVENT_COLUMN, $META_DATA_COLUMN, $AGGREGATE_TYPE, $CREATED_AT_COLUMN) " +
                     "values (?, ?, ?, ?, ?, ?, ?, now())"
-            jdbcTemplate.update(sql, UUID.randomUUID().toString(), aggregate.id.value, version, it
+            jdbcTemplate.update(sql, it.id.value.toString(), aggregate.id.value, version, it
                     .retrieveEventType().value, it.retrieveJsonData().data, metaData.objectToJson(), this
                     .getGenericCanonicalName())
             version += 1

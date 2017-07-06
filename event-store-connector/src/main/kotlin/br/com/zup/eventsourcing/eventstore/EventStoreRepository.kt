@@ -2,8 +2,8 @@ package br.com.zup.eventsourcing.eventstore
 
 import akka.actor.Status
 import akka.util.Timeout
-import br.com.zup.eventsourcing.core.Aggregate
 import br.com.zup.eventsourcing.core.AggregateId
+import br.com.zup.eventsourcing.core.AggregateRoot
 import br.com.zup.eventsourcing.core.AggregateVersion
 import br.com.zup.eventsourcing.core.Event
 import br.com.zup.eventsourcing.core.MetaData
@@ -24,11 +24,9 @@ import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import java.lang.reflect.ParameterizedType
 import java.nio.charset.Charset
-import java.util.*
-import kotlin.collections.ArrayList
 
 
-abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
+abstract class EventStoreRepository<T : AggregateRoot> : Repository<T> {
     private val LOG = LogManager.getLogger(this.javaClass)
 
     @Autowired lateinit var connection: EsConnection
@@ -102,7 +100,7 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
             val timeout = Timeout(Duration.create(60, "seconds"))
             val items = aggregate.events.map { event ->
                 EventDataBuilder(event.retrieveEventType().value)
-                        .eventId(UUID.randomUUID())
+                        .eventId(event.id.value)
                         .jsonData(event.retrieveJsonData().data)
                         .jsonMetadata(metaData.objectToJson())
                         .build()

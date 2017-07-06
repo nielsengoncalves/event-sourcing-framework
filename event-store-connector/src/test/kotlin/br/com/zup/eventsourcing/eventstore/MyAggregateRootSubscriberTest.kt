@@ -3,8 +3,8 @@ package br.com.zup.eventsourcing.eventstore
 import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.eventstore.config.BaseTest
-import br.com.zup.eventsourcing.eventstore.domain.MyAggregate
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepository
+import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRoot
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateSubscriber
 import br.com.zup.eventsourcing.eventstore.domain.MyEventHandler
 import org.junit.Test
@@ -14,7 +14,7 @@ import java.lang.Thread.sleep
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-class MyAggregateSubscriberTest : BaseTest() {
+class MyAggregateRootSubscriberTest : BaseTest() {
 
     @Autowired
     lateinit var eventHandler: MyEventHandler
@@ -27,7 +27,7 @@ class MyAggregateSubscriberTest : BaseTest() {
     fun shouldHandleWithSuccess() {
         myAggregateSubscriber.start()
         val id = java.util.UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
+        val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
 
         metaData.set("teste", "teste")

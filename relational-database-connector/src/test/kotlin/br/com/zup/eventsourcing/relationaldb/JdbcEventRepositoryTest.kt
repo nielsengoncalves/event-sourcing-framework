@@ -3,7 +3,7 @@ package br.com.zup.eventsourcing.relationaldb
 import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.relationaldb.config.RepositoryBaseTest
-import br.com.zup.eventsourcing.relationaldb.domain.MyAggregate
+import br.com.zup.eventsourcing.relationaldb.domain.MyAggregateRoot
 import br.com.zup.eventsourcing.relationaldb.domain.MyJdbcEventRepository
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -17,7 +17,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
     @Test
     fun saveAggregate_withoutMetaData() {
         val id = UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
+        val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
         myJdbcEventRepository.save(myAggregate)
     }
@@ -25,7 +25,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
     @Test
     fun saveAggregate_withMetaData() {
         val id = UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
+        val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
         metaData.set("teste", myAggregate)
         myAggregate.modify()
@@ -35,7 +35,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
     @Test
     fun saveAndGetAggregate_withoutMetaData() {
         val id = UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
+        val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
         myJdbcEventRepository.save(myAggregate)
 

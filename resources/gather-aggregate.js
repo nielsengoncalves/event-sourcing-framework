@@ -1,7 +1,7 @@
-fromCategory('MyAggregate')
+fromCategory('MyAggregateRoot')
     .foreachStream().when(
         {
             $any : function(s,e) {
-                linkTo("MyAggregate", e);
+                linkTo("MyAggregateRoot", e);
             }
         })
