@@ -11,7 +11,7 @@ class MyAggregateRootTest {
 
     @Test
     fun createAggregate() {
-        val id = java.util.UUID.randomUUID().toString()
+        val id = java.util.UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         assertTrue(myAggregate.event is CreateEvent)
         assertEquals(1, myAggregate.events.count { it is CreateEvent })
@@ -22,7 +22,7 @@ class MyAggregateRootTest {
 
     @Test
     fun modifyAggregate() {
-        val id = java.util.UUID.randomUUID().toString()
+        val id = java.util.UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
         assertTrue(myAggregate.event is ModifyEvent)

@@ -20,6 +20,7 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     private val LOG = LogManager.getLogger(this.javaClass)
 
     companion object {
+        val TABLE_NAME: String = "ES_EVENT"
         val ID_COLUMN: String = "ID"
         val AGGREGATE_ID_COLUMN = "AGGREGATE_ID"
         val VERSION_COLUMN = "VERSION"
@@ -41,10 +42,10 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     fun saveAggregate(aggregate: T, metaData: MetaData? = null) {
         var version = aggregate.version.value + 1
         aggregate.events.forEach {
-            val sql = "insert into ${this.getGenericName()} ($ID_COLUMN, $AGGREGATE_ID_COLUMN, $VERSION_COLUMN, " +
+            val sql = "insert into $TABLE_NAME ($ID_COLUMN, $AGGREGATE_ID_COLUMN, $VERSION_COLUMN, " +
                     "$EVENT_TYPE_COLUMN, $EVENT_COLUMN, $META_DATA_COLUMN, $AGGREGATE_TYPE, $CREATED_AT_COLUMN) " +
                     "values (?, ?, ?, ?, ?, ?, ?, now())"
-            jdbcTemplate.update(sql, it.id.value.toString(), aggregate.id.value, version, it
+            jdbcTemplate.update(sql, it.id.value, aggregate.id.value, version, it
                     .retrieveEventType().value, it.retrieveJsonData().data, metaData.objectToJson(), this
                     .getGenericCanonicalName())
             version += 1
@@ -52,7 +53,7 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     }
 
     override fun get(id: AggregateId): T {
-        val sql = "select * from ${getGenericName().toLowerCase()} where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
+        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
         val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), id.value)
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
         val aggregate = aggregateClass.newInstance()

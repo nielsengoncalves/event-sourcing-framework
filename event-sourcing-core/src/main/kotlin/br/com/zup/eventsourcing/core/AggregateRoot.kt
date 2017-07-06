@@ -1,6 +1,7 @@
 package br.com.zup.eventsourcing.core
 
 import org.apache.logging.log4j.LogManager
+import java.util.*
 
 abstract class AggregateRoot {
     private val LOG = LogManager.getLogger(this.javaClass)
@@ -50,7 +51,7 @@ abstract class AggregateRoot {
 
 data class AggregateVersion(val value: Int)
 
-open class AggregateId(val value: String) {
+open class AggregateId(val value: UUID) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other?.javaClass != javaClass) return false

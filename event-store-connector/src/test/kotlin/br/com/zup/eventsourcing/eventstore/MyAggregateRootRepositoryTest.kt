@@ -19,7 +19,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     @Test
     fun saveMyAggregateCreate() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
         metaData.set("teste", "teste")
@@ -29,7 +29,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     @Test
     fun saveMyAggregateCreateAndGet() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
         metaData.set("teste2", myAggregate)
@@ -43,7 +43,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     @Test
     fun createAndModifyAggregate() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
 
         val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
@@ -65,7 +65,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     @Test(expected = WrongExpectedVersionException::class)
     fun saveWithWrongExpectedVersion() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
         metaData.set("teste2", myAggregate)
@@ -78,7 +78,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     @Test
     fun saveMyAggregateCreateNoModifyAndSaveAgain() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
         metaData.set("teste", "teste")

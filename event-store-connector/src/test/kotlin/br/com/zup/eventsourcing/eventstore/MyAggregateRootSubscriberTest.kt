@@ -26,7 +26,7 @@ class MyAggregateRootSubscriberTest : BaseTest() {
     @Test
     fun shouldHandleWithSuccess() {
         myAggregateSubscriber.start()
-        val id = java.util.UUID.randomUUID().toString()
+        val id = java.util.UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
 

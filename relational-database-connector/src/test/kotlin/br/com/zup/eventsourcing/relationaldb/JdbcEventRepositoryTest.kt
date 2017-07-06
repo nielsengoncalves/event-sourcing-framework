@@ -16,7 +16,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
 
     @Test
     fun saveAggregate_withoutMetaData() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
         myJdbcEventRepository.save(myAggregate)
@@ -24,7 +24,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
 
     @Test
     fun saveAggregate_withMetaData() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
         metaData.set("teste", myAggregate)
@@ -34,7 +34,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
 
     @Test
     fun saveAndGetAggregate_withoutMetaData() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
         myJdbcEventRepository.save(myAggregate)

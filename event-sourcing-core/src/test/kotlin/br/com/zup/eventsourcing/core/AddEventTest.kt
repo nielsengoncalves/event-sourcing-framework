@@ -12,7 +12,7 @@ import java.util.*
 class AddEventTest {
     @Test
     fun createAddEvent() {
-        val id = UUID.randomUUID().toString()
+        val id = UUID.randomUUID()
         val myAddEvent = CreateEvent(AggregateId(id))
 
         assertEquals(CreateEvent::class.java.canonicalName, myAddEvent.retrieveEventType().value)
