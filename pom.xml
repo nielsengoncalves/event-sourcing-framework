@@ -18,7 +18,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <kotlin.version>1.1.3</kotlin.version>
+        <kotlin.version>1.1.3-2</kotlin.version>
         <junit.version>4.12</junit.version>
         <eventstore.version>4.1.4-SNAPSHOT</eventstore.version>
         <spring.version>4.3.8.RELEASE</spring.version>
@@ -39,11 +39,6 @@
                 <groupId>${project.groupId}</groupId>
                 <artifactId>event-sourcing-core</artifactId>
                 <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-stdlib</artifactId>
-                <version>${kotlin.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>

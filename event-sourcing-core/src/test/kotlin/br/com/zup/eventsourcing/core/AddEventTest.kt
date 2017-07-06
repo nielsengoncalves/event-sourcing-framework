@@ -17,9 +17,8 @@ class AddEventTest {
 
         assertEquals(CreateEvent::class.java.canonicalName, myAddEvent.retrieveEventType().value)
         //language=JSON
-        assertThat(myAddEvent.retrieveJsonData().data, CoreMatchers.containsString("{\"id\":{\"value\":\"${myAddEvent
-                .id.value}\"}," +
-                "\"aggregateId\":{\"value\":\"$id\"}}"))
+        assertThat(myAddEvent.retrieveJsonData().data, CoreMatchers.containsString(
+                "\"aggregateId\":{\"value\":\"$id\"}"))
     }
 
     @Test
