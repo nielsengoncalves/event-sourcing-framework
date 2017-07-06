@@ -1,6 +1,5 @@
 package br.com.zup.eventsourcing.core
 
-import br.com.zup.eventsourcing.core.util.NoArgsConstructor
 import org.apache.logging.log4j.LogManager
 
 abstract class AggregateRoot {
@@ -49,10 +48,8 @@ abstract class AggregateRoot {
     }
 }
 
-@NoArgsConstructor
 data class AggregateVersion(val value: Int)
 
-@NoArgsConstructor
 open class AggregateId(val value: String) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
