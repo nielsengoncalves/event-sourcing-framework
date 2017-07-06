@@ -24,7 +24,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         val metaData = MetaData()
         metaData.set("teste", "teste")
         myAggregateRepository.save(myAggregate, metaData)
-        assertEquals(0, myAggregate.events.size)
+        assertEquals(1, myAggregate.events.size)
     }
 
     @Test
@@ -36,7 +36,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         myAggregateRepository.save(myAggregate, metaData)
         val myAggregateGot = myAggregateRepository.get(myAggregate.id)
         assertEquals(myAggregate, myAggregateGot)
-        assertEquals(0, myAggregate.events.size)
+        assertEquals(1, myAggregate.events.size)
         assertEquals(0, myAggregateGot.events.size)
 
     }
@@ -58,7 +58,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         assertEquals("ModifyEvent", loadedFromEventStore.status)
         assertEquals(2, loadedFromEventStore.modificationHistory.size)
         assertEquals(2, loadedFromEventStore.version.value)
-        assertEquals(0, myAggregate.events.size)
+        assertEquals(3, myAggregate.events.size)
         assertEquals(0, loadedFromEventStore.events.size)
 
     }
@@ -83,9 +83,9 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         val metaData = MetaData()
         metaData.set("teste", "teste")
         myAggregateRepository.save(myAggregate, metaData)
-        assertEquals(0, myAggregate.events.size)
+        assertEquals(1, myAggregate.events.size)
         myAggregateRepository.save(myAggregate, metaData)
-        assertEquals(0, myAggregate.events.size)
+        assertEquals(1, myAggregate.events.size)
     }
 
 }

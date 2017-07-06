@@ -22,11 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import java.lang.reflect.ParameterizedType
 import java.nio.charset.Charset
 
 
-abstract class EventStoreRepository<T : AggregateRoot> : Repository<T> {
+abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
     private val LOG = LogManager.getLogger(this.javaClass)
 
     @Autowired lateinit var connection: EsConnection
@@ -120,14 +119,12 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T> {
         if (message == null) {
             val aggregateGot = get(aggregate.id)
             if (aggregateGot.version.value == aggregate.version.value + 1) {
-                aggregate.clearEvents()
                 LOG.warn("is null, but we checked, the message is there, better look if server its ok: ")
             } else {
                 LOG.warn("is null, and I dont know why so check if server its ok: ")
                 throw InternalError()
             }
         } else if (message is WriteResult) {
-            aggregate.clearEvents()
             LOG.debug("on WriteResult: " + message.toString())
         } else if (message is Status.Failure) {
             LOG.error("on Status.Failure: " + message.toString())
@@ -143,16 +140,6 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T> {
             return ExpectedVersion.`NoStream$`.`MODULE$`
         else
             return ExpectedVersion.Exact(expectedVersion)
-    }
-
-    private fun getGenericName(): String {
-        return ((javaClass
-                .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).simpleName
-    }
-
-    private fun getGenericCanonicalName(): String {
-        return ((javaClass
-                .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).canonicalName
     }
 
     class NotFoundException : Throwable()
