@@ -2,8 +2,8 @@ package br.com.zup.eventsourcing.eventstore
 
 import akka.actor.Status
 import akka.util.Timeout
-import br.com.zup.eventsourcing.core.Aggregate
 import br.com.zup.eventsourcing.core.AggregateId
+import br.com.zup.eventsourcing.core.AggregateRoot
 import br.com.zup.eventsourcing.core.AggregateVersion
 import br.com.zup.eventsourcing.core.Event
 import br.com.zup.eventsourcing.core.MetaData
@@ -22,18 +22,13 @@ import org.springframework.beans.factory.annotation.Autowired
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
-import java.lang.reflect.ParameterizedType
 import java.nio.charset.Charset
-import java.util.*
-import kotlin.collections.ArrayList
 
 
-abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
+abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
     private val LOG = LogManager.getLogger(this.javaClass)
 
     @Autowired lateinit var connection: EsConnection
-    private val myUUID = UUID.randomUUID()
-
 
     override fun save(aggregate: T) {
         return save(aggregate, MetaData())
@@ -104,7 +99,7 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
             val timeout = Timeout(Duration.create(60, "seconds"))
             val items = aggregate.events.map { event ->
                 EventDataBuilder(event.retrieveEventType().value)
-                        .eventId(myUUID)
+                        .eventId(event.id.value)
                         .jsonData(event.retrieveJsonData().data)
                         .jsonMetadata(metaData.objectToJson())
                         .build()
@@ -124,14 +119,12 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
         if (message == null) {
             val aggregateGot = get(aggregate.id)
             if (aggregateGot.version.value == aggregate.version.value + 1) {
-                aggregate.clearEvents()
                 LOG.warn("is null, but we checked, the message is there, better look if server its ok: ")
             } else {
                 LOG.warn("is null, and I dont know why so check if server its ok: ")
                 throw InternalError()
             }
         } else if (message is WriteResult) {
-            aggregate.clearEvents()
             LOG.debug("on WriteResult: " + message.toString())
         } else if (message is Status.Failure) {
             LOG.error("on Status.Failure: " + message.toString())
@@ -147,16 +140,6 @@ abstract class EventStoreRepository<T : Aggregate> : Repository<T> {
             return ExpectedVersion.`NoStream$`.`MODULE$`
         else
             return ExpectedVersion.Exact(expectedVersion)
-    }
-
-    private fun getGenericName(): String {
-        return ((javaClass
-                .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).simpleName
-    }
-
-    private fun getGenericCanonicalName(): String {
-        return ((javaClass
-                .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).canonicalName
     }
 
     class NotFoundException : Throwable()

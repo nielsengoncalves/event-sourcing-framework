@@ -1,19 +1,18 @@
-package br.com.zup.eventsourcing.eventstore
+package br.com.zup.eventsourcing.core
 
-import br.com.zup.eventsourcing.core.AggregateId
-import br.com.zup.eventsourcing.eventstore.domain.CreateEvent
-import br.com.zup.eventsourcing.eventstore.domain.ModifyEvent
-import br.com.zup.eventsourcing.eventstore.domain.MyAggregate
+import br.com.zup.eventsourcing.core.domain.CreateEvent
+import br.com.zup.eventsourcing.core.domain.ModifyEvent
+import br.com.zup.eventsourcing.core.domain.MyAggregateRoot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class MyAggregateTest {
+class MyAggregateRootTest {
 
     @Test
     fun createAggregate() {
-        val id = java.util.UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
+        val id = java.util.UUID.randomUUID()
+        val myAggregate = MyAggregateRoot(AggregateId(id))
         assertTrue(myAggregate.event is CreateEvent)
         assertEquals(1, myAggregate.events.count { it is CreateEvent })
         assertEquals(id, myAggregate.id.value)
@@ -23,8 +22,8 @@ class MyAggregateTest {
 
     @Test
     fun modifyAggregate() {
-        val id = java.util.UUID.randomUUID().toString()
-        val myAggregate = MyAggregate(AggregateId(id))
+        val id = java.util.UUID.randomUUID()
+        val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
         assertTrue(myAggregate.event is ModifyEvent)
         assertEquals(1, myAggregate.events.count { it is ModifyEvent })
