@@ -84,9 +84,9 @@ or if it will be external to the application itself, then use this:
 
 ## Relational Database setup
 
-We implemented it using [JdbcTemplate](https://docs.spring
-.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html) so the only thing need for the 
-lib is to receive a JdbcTemplate instance.
+We implemented it using 
+[JdbcTemplate](https://docs.spring.io/spring/docs/current/javadoc-api/org/springframework/jdbc/core/JdbcTemplate.html) 
+so the only thing need for the lib is to receive a JdbcTemplate instance.
 
 ## But how to use the lib?
 
