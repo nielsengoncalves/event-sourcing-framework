@@ -23,6 +23,7 @@
         <dependency>
             <groupId>com.geteventstore</groupId>
             <artifactId>eventstore-client_2.11</artifactId>
+            <version>${eventstore.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

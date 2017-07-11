@@ -94,15 +94,15 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
         }
     }
 
-    override fun get(id: AggregateId): T {
-        LOG.debug("receive get message with aggregateId: $id")
-        val message = tryReadStreamEventsFromBeginning(id)
-        LOG.debug("receive get message with aggregateId: $id and message $message")
-        return replayPurchaseOrderAggregate(message)
+    override fun get(aggregateId: AggregateId): T {
+        LOG.debug("receive get message with aggregateId: $aggregateId")
+        val message = tryReadStreamEventsFromBeginning(aggregateId)
+        LOG.debug("receive get message with aggregateId: $aggregateId and message $message")
+        return replayAggregateRoot(message)
 
     }
 
-    private fun replayPurchaseOrderAggregate(readStreamEventsCompleted: ReadStreamEventsCompleted): T {
+    private fun replayAggregateRoot(readStreamEventsCompleted: ReadStreamEventsCompleted): T {
         val events = ArrayList<Event>()
         var version = -1
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
