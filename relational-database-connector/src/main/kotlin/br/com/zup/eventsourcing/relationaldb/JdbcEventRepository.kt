@@ -55,6 +55,7 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     override fun get(aggregateId: AggregateId): T {
         val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
         val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value)
+        if (events.isEmpty()) throw NotFoundException()
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
         val aggregate = aggregateClass.newInstance()
         val list = mutableListOf<Event>()
@@ -71,6 +72,7 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     override fun getLastMetaData(aggregateId: AggregateId): MetaData {
         val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
         val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value)
+        if (events.isEmpty()) throw NotFoundException()
         val lastEvent = events.last()
         return lastEvent.metaData.jsonToObject(MetaData::class.java)
     }

@@ -18,4 +18,5 @@ abstract class Repository<T : AggregateRoot> {
                 .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).canonicalName
     }
 
+    class NotFoundException : Throwable()
 }

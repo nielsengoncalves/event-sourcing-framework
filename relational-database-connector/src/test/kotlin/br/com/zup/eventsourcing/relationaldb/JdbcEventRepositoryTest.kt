@@ -2,6 +2,7 @@ package br.com.zup.eventsourcing.relationaldb
 
 import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.MetaData
+import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.relationaldb.config.RepositoryBaseTest
 import br.com.zup.eventsourcing.relationaldb.domain.MyAggregateRoot
 import br.com.zup.eventsourcing.relationaldb.domain.MyJdbcEventRepository
@@ -68,6 +69,12 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         myJdbcEventRepository.save(newMyAggregate, metaData)
         val newMetaData = myJdbcEventRepository.getLastMetaData(aggregateId)
         assertEquals("teste2", newMetaData["teste"])
+    }
+
+    @Test(expected = Repository.NotFoundException::class)
+    fun getNotFoundException() {
+        val aggregateID = AggregateId(UUID.randomUUID())
+        myJdbcEventRepository.get(aggregateID)
     }
 
 }

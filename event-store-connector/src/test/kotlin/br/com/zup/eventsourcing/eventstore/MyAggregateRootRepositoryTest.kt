@@ -3,6 +3,7 @@ package br.com.zup.eventsourcing.eventstore
 import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.AggregateVersion
 import br.com.zup.eventsourcing.core.MetaData
+import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.eventstore.config.BaseTest
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepository
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRoot
@@ -128,7 +129,7 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     }
 
-    @Test(expected = EventStoreRepository.NotFoundException::class)
+    @Test(expected = Repository.NotFoundException::class)
     fun getStreamNotFoundException() {
         val aggregateID = AggregateId(UUID.randomUUID())
         myAggregateRepository.get(aggregateID)
