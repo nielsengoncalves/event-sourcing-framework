@@ -168,7 +168,6 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
         }
     }
 
-    class NotFoundException : Throwable()
     class MessageNotExceptedException : Throwable()
 }
 
