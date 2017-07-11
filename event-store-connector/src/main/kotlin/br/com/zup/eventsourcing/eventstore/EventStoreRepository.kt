@@ -108,9 +108,9 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
         for (event: eventstore.Event in readStreamEventsCompleted.events()) {
             val obj = event.record().data().data().value().decodeString(Charset.defaultCharset()).jsonToObject(Class.forName(event.data().eventType()))
-            val purchaseOrderEvent = obj as Event
+            val orderEvent = obj as Event
             version = event.number().value()
-            events.add(purchaseOrderEvent)
+            events.add(orderEvent)
         }
 
         if (events.size > 0) {
