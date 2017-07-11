@@ -6,6 +6,7 @@ abstract class Repository<T : AggregateRoot> {
     abstract fun save(aggregateRoot: T)
     abstract fun save(aggregateRoot: T, metaData: MetaData)
     abstract fun get(aggregateId: AggregateId): T
+    abstract fun getLastMetaData(aggregateId: AggregateId): MetaData
 
     protected fun getGenericName(): String {
         return ((javaClass

@@ -44,4 +44,30 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         assertEquals(myAggregate.status, mySavedAggregate.status)
     }
 
+    @Test
+    fun getMetaData_withOneEventOnly() {
+        val aggregateId = AggregateId(UUID.randomUUID())
+        val myAggregate = MyAggregateRoot(aggregateId)
+        val metaData = MetaData()
+        metaData.set("teste", "teste1")
+        myJdbcEventRepository.save(myAggregate, metaData)
+        val newMetaData = myJdbcEventRepository.getLastMetaData(aggregateId)
+        assertEquals("teste1", newMetaData["teste"])
+    }
+
+    @Test
+    fun getMetaData_withTwoEventsOnly() {
+        val aggregateId = AggregateId(UUID.randomUUID())
+        val myAggregate = MyAggregateRoot(aggregateId)
+        val metaData = MetaData()
+        metaData.set("teste", "teste1")
+        myJdbcEventRepository.save(myAggregate, metaData)
+        val newMyAggregate = myJdbcEventRepository.get(aggregateId)
+        metaData.set("teste", "teste2")
+        newMyAggregate.modify()
+        myJdbcEventRepository.save(newMyAggregate, metaData)
+        val newMetaData = myJdbcEventRepository.getLastMetaData(aggregateId)
+        assertEquals("teste2", newMetaData["teste"])
+    }
+
 }

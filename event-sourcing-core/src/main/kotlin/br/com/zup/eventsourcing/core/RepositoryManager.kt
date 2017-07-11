@@ -15,4 +15,8 @@ class RepositoryManager<T : AggregateRoot>(val repositories: List<Repository<T>>
     override fun get(aggregateId: AggregateId): T {
         return repositories.first().get(aggregateId)
     }
+
+    override fun getLastMetaData(aggregateId: AggregateId): MetaData {
+        return repositories.first().getLastMetaData(aggregateId)
+    }
 }
