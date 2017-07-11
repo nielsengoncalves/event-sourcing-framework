@@ -18,11 +18,19 @@ class MyAggregateRootRepositoryTest : BaseTest() {
     lateinit var myAggregateRepository: MyAggregateRepository
 
     @Test
-    fun saveMyAggregateCreate() {
+    fun saveMyAggregate_WithoutMetaData() {
+        val id = UUID.randomUUID()
+        val myAggregate = MyAggregateRoot(AggregateId(id))
+        myAggregateRepository.save(myAggregate)
+        assertEquals(1, myAggregate.events.size)
+    }
+
+    @Test
+    fun saveMyAggregate_WithMetaData() {
         val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
-        metaData.set("teste", "teste")
+        metaData.set("teste", myAggregate)
         myAggregateRepository.save(myAggregate, metaData)
         assertEquals(1, myAggregate.events.size)
     }
@@ -32,13 +40,12 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
-        metaData.set("teste2", myAggregate)
+        metaData.set("teste", myAggregate)
         myAggregateRepository.save(myAggregate, metaData)
         val myAggregateGot = myAggregateRepository.get(myAggregate.id)
         assertEquals(myAggregate, myAggregateGot)
         assertEquals(1, myAggregate.events.size)
         assertEquals(0, myAggregateGot.events.size)
-
     }
 
     @Test
@@ -81,11 +88,50 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         val metaData = MetaData()
+        metaData.set("teste", "testeSaveAgain")
+        myAggregateRepository.save(myAggregate, metaData)
+        assertEquals(1, myAggregate.events.size)
+        myAggregateRepository.save(myAggregate, metaData)
+        assertEquals(1, myAggregate.events.size)
+    }
+
+    @Test
+    fun getMetaData_whenOnlyOneEvent() {
+        val aggregateID = AggregateId(UUID.randomUUID())
+        val myAggregate = MyAggregateRoot(aggregateID)
+        val metaData = MetaData()
         metaData.set("teste", "teste")
         myAggregateRepository.save(myAggregate, metaData)
         assertEquals(1, myAggregate.events.size)
+        val myRetrievedMetaData = myAggregateRepository.getLastMetaData(aggregateID)
+        assertEquals(metaData["teste"], myRetrievedMetaData["teste"])
+    }
+
+    @Test
+    fun getMetaData_whenTwoEvents() {
+        val aggregateID = AggregateId(UUID.randomUUID())
+        var myAggregate = MyAggregateRoot(aggregateID)
+        val metaData = MetaData()
+        metaData.set("teste", "teste")
         myAggregateRepository.save(myAggregate, metaData)
-        assertEquals(1, myAggregate.events.size)
+        myAggregate.clearEvents()
+        assertEquals(0, myAggregate.events.size)
+        var myRetrievedMetaData = myAggregateRepository.getLastMetaData(aggregateID)
+        assertEquals(metaData["teste"], myRetrievedMetaData["teste"])
+
+        myAggregate = myAggregateRepository.get(aggregateID)
+        myAggregate.modify()
+        metaData.set("teste", "modify")
+        myAggregateRepository.save(myAggregate, metaData)
+        myRetrievedMetaData = myAggregateRepository.getLastMetaData(aggregateID)
+        assertEquals("modify", myRetrievedMetaData["teste"])
+
+    }
+
+    @Test(expected = EventStoreRepository.NotFoundException::class)
+    fun getStreamNotFoundException() {
+        val aggregateID = AggregateId(UUID.randomUUID())
+        myAggregateRepository.get(aggregateID)
     }
 
 }

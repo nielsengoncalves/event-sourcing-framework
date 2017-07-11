@@ -31,30 +31,30 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
         val CREATED_AT_COLUMN = "CREATED_AT"
     }
 
-    override fun save(aggregate: T) {
-        saveAggregate(aggregate, null)
+    override fun save(aggregateRoot: T) {
+        saveAggregate(aggregateRoot, null)
     }
 
-    override fun save(aggregate: T, metaData: MetaData) {
-        saveAggregate(aggregate, metaData)
+    override fun save(aggregateRoot: T, metaData: MetaData) {
+        saveAggregate(aggregateRoot, metaData)
     }
 
-    fun saveAggregate(aggregate: T, metaData: MetaData? = null) {
-        var version = aggregate.version.value + 1
-        aggregate.events.forEach {
+    fun saveAggregate(aggregateRoot: T, metaData: MetaData? = null) {
+        var version = aggregateRoot.version.value + 1
+        aggregateRoot.events.forEach {
             val sql = "insert into $TABLE_NAME ($ID_COLUMN, $AGGREGATE_ID_COLUMN, $VERSION_COLUMN, " +
                     "$EVENT_TYPE_COLUMN, $EVENT_COLUMN, $META_DATA_COLUMN, $AGGREGATE_TYPE, $CREATED_AT_COLUMN) " +
                     "values (?, ?, ?, ?, ?, ?, ?, now())"
-            jdbcTemplate.update(sql, it.id.value, aggregate.id.value, version, it
+            jdbcTemplate.update(sql, it.id.value, aggregateRoot.id.value, version, it
                     .retrieveEventType().value, it.retrieveJsonData().data, metaData.objectToJson(), this
                     .getGenericCanonicalName())
             version += 1
         }
     }
 
-    override fun get(id: AggregateId): T {
+    override fun get(aggregateId: AggregateId): T {
         val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
-        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), id.value)
+        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value)
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
         val aggregate = aggregateClass.newInstance()
         val list = mutableListOf<Event>()
@@ -66,6 +66,13 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
         (aggregate as T)
         aggregate.load(list, AggregateVersion(version))
         return aggregate
+    }
+
+    override fun getLastMetaData(aggregateId: AggregateId): MetaData {
+        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
+        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value)
+        val lastEvent = events.last()
+        return lastEvent.metaData.jsonToObject(MetaData::class.java)
     }
 
 }
