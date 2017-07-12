@@ -1,5 +1,7 @@
 # Event Sourcing Framework
 
+[![codecov](https://codecov.io/gh/ZupIT/event-sourcing-framework/branch/master/graph/badge.svg)](https://codecov.io/gh/ZupIT/event-sourcing-framework)
+
 This is a fremework meant to ease an [event sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) implementation on the JVM.
 Initially we provide event persistence with [EventStore.JVM](https://github.com/EventStore/EventStore.JVM) and 
 [PostgreSql](https://www.postgresql.org/) and subscription with [Event Store](http://docs.geteventstore.com/) and 
