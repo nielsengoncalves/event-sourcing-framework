@@ -1,11 +1,11 @@
-package br.com.zup.eventsourcing.core.domain
+package br.com.zup.eventsourcing.relationaldb.domain
 
-import br.com.zup.eventsourcing.core.Aggregate
 import br.com.zup.eventsourcing.core.AggregateId
+import br.com.zup.eventsourcing.core.AggregateRoot
 import br.com.zup.eventsourcing.core.Event
 import java.time.LocalDateTime
 
-class MyAggregate() : Aggregate() {
+class MyAggregateRoot() : AggregateRoot() {
     var status: String = "OPENED"
     var modificationHistory: MutableList<LocalDateTime> = mutableListOf()
 

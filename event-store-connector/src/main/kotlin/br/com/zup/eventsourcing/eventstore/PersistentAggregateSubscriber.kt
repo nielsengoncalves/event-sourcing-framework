@@ -1,7 +1,7 @@
 package br.com.zup.eventsourcing.eventstore
 
 import akka.actor.ActorSystem
-import br.com.zup.eventsourcing.core.Aggregate
+import br.com.zup.eventsourcing.core.AggregateRoot
 import br.com.zup.eventsourcing.eventstore.config.SpringExtension
 import eventstore.EventStream
 import eventstore.PersistentSubscriptionActor
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component
 import java.lang.reflect.ParameterizedType
 
 @Component
-abstract class PersistentAggregateSubscriber<T : Aggregate>(val subscriptionGroupName: String = "") {
+abstract class PersistentAggregateSubscriber<T : AggregateRoot>(val subscriptionGroupName: String = "") {
 
     @Autowired lateinit var actorSystem: ActorSystem
     @Autowired lateinit var springExtension: SpringExtension

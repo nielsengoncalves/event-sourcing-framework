@@ -2,11 +2,14 @@
 <Configuration>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36}.%M - %msg %X%n"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg %X%n"/>
         </Console>
     </Appenders>
     <Loggers>
-        <Logger name="br.com.zup.eventsourcing" level="DEBUG" additivity="false">
+        <Logger name="br.com.zup.rw" level="INFO" additivity="false">
+            <AppenderRef ref="Console"/>
+        </Logger>
+        <Logger name="br.com.zup.realwave" level="INFO" additivity="false">
             <AppenderRef ref="Console"/>
         </Logger>
         <Root level="INFO">

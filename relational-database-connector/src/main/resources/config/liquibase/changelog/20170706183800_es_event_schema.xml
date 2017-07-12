@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="20170706183800-1" author="es">
+        <createTable tableName="es_event">
+            <column name="id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="aggregate_id" type="UUID">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="version" type="java.sql.Types.INTEGER">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="event_type" type="java.sql.Types.CLOB">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="event" type="java.sql.Types.CLOB">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="meta_data" type="java.sql.Types.CLOB">
+                <constraints nullable="true"/>
+            </column>
+
+            <column name="aggregate_type" type="java.sql.Types.CLOB">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="created_at" type="java.sql.Types.TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>

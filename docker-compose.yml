@@ -14,3 +14,12 @@ services:
    ports:
      - "2113:2113"
      - "1113:1113"
+ postgres1:
+   image: postgres:9.6
+   ports:
+     - "5432:5432"
+   environment:
+     - POSTGRES_DB=my_event_sourcing
+     - POSTGRES_USER=es_db
+     - POSTGRES_PASSWORD=es_db
+     - MAX_CONNECTIONS=300

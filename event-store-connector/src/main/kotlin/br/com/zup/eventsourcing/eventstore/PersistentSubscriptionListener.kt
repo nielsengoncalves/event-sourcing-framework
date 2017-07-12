@@ -14,6 +14,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
 import java.nio.charset.Charset
+import java.util.*
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -53,8 +54,8 @@ class PersistentSubscriptionListener(val eventHandler: EventHandler) :
 
     }
 
-    private fun getAggregateId(resolvedEvent: ResolvedEvent): String {
-        return extractAggregateId(resolvedEvent.linkedEvent().streamId().value())
+    private fun getAggregateId(resolvedEvent: ResolvedEvent): UUID {
+        return UUID.fromString(extractAggregateId(resolvedEvent.linkedEvent().streamId().value()))
     }
 
     private fun extractAggregateId(value: String): String {
