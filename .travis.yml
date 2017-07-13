@@ -16,9 +16,8 @@ before_install:
  - psql -c "CREATE USER es_db WITH PASSWORD 'es_db';" -U postgres
 script:
  - mvn clean install -Dspring.profiles.active=ci,postgres
- - mvn clean package -Dspring.profiles.active=ci,postgres
- - bash <(curl -s httpmvn s://codecov.io/bash)
 after_success:
+ - bash <(curl -s https://codecov.io/bash)
  - docker-compose down
 cache:
   directories:
