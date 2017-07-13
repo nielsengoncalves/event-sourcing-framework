@@ -4,9 +4,12 @@ jdk:
 sudo: true
 services:
   - docker
+  - postgres
 before_install:
- - docker-compose up --build -d
+ - docker-compose up --build -d event-store
  - bash run.sh
+ - psql -c "CREATE DATABASE my_event_sourcing;" -U postgres
+ - psql -c "CREATE USER es_db WITH PASSWORD 'es_db';" -U postgres
 script:
  - mvn clean install -Dspring.profiles.active=ci,postgres
 after_success:
