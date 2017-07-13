@@ -32,4 +32,14 @@ class MyAggregateRootTest {
         assertEquals(-1, myAggregate.version.value)
     }
 
+    @Test
+    fun clearEvents() {
+        val id = java.util.UUID.randomUUID()
+        val myAggregate = MyAggregateRoot(AggregateId(id))
+        myAggregate.modify()
+        assertEquals(1, myAggregate.events.size)
+        myAggregate.clearEvents()
+        assertEquals(0, myAggregate.events.size)
+    }
+
 }
