@@ -4,7 +4,8 @@ jdk:
 sudo: true
 services:
   - docker
-script:
+before_install:
  - docker-compose up
+install: true
 after_success:
  - bash <(curl -s httpmvn s://codecov.io/bash)
