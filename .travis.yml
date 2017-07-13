@@ -1,9 +1,6 @@
 language: java
 jdk:
   - oraclejdk8
-env:
-  global:
-    - CODECOV_TOKEN=:d970f56a-a411-4caf-8e43-d9edb5aadc42
 sudo: true
 services:
  - docker
