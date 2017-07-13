@@ -1,4 +1,6 @@
 language: java
-sudo: false
+sudo: true
+script:
+ - docker-compose up
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+ - bash <(curl -s httpmvn s://codecov.io/bash)
