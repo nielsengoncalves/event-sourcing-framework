@@ -8,7 +8,7 @@ before_install:
  - docker-compose up --build -d
  - bash run.sh
 script:
- - mvn clean install
+ - mvn clean install -Dspring.profiles.active=ci,postgres
 after_success:
  - bash <(curl -s httpmvn s://codecov.io/bash)
  - docker-compose down
