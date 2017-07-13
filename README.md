@@ -1,5 +1,6 @@
 # Event Sourcing Framework
 
+[![Build Status](https://travis-ci.org/ZupIT/event-sourcing-framework.svg?branch=master)](https://travis-ci.org/ZupIT/event-sourcing-framework)
 [![codecov](https://codecov.io/gh/ZupIT/event-sourcing-framework/branch/master/graph/badge.svg)](https://codecov.io/gh/ZupIT/event-sourcing-framework)
 
 This is a fremework meant to ease an [event sourcing](https://martinfowler.com/eaaDev/EventSourcing.html) implementation on the JVM.
