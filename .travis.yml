@@ -14,7 +14,7 @@ before_install:
  - psql -c "CREATE DATABASE my_event_sourcing;" -U postgres
  - psql -c "CREATE USER es_db WITH PASSWORD 'es_db';" -U postgres
 script:
- - mvn clean jacoco:prepare-agent install jacoco:report -Dspring.profiles.active=ci,postgres
+ - ./mvnw clean install -Dspring.profiles.active=ci,postgres
 after_success:
  - bash <(curl -s httpmvn s://codecov.io/bash)
  - docker-compose down
