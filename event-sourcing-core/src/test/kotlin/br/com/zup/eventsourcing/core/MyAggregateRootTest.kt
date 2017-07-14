@@ -50,7 +50,7 @@ class MyAggregateRootTest {
         val event = ModifyEvent("modify", LocalDateTime.now())
         myAggregate.load(listOf(event), AggregateVersion(2))
         assertEquals(1, myAggregate.events.size)
-        assertEquals(2, myAggregate.version)
+        assertEquals(2, myAggregate.version.value)
     }
 
 }
