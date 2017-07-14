@@ -6,6 +6,7 @@ import br.com.zup.eventsourcing.core.domain.MyAggregateRoot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.time.LocalDateTime
 
 class MyAggregateRootTest {
 
@@ -40,6 +41,16 @@ class MyAggregateRootTest {
         assertEquals(2, myAggregate.events.size)
         myAggregate.clearEvents()
         assertEquals(0, myAggregate.events.size)
+    }
+
+    @Test
+    fun loadEvents() {
+        val id = java.util.UUID.randomUUID()
+        val myAggregate = MyAggregateRoot(AggregateId(id))
+        val event = ModifyEvent("modify", LocalDateTime.now())
+        myAggregate.load(listOf(event), AggregateVersion(2))
+        assertEquals(1, myAggregate.events.size)
+        assertEquals(2, myAggregate.version)
     }
 
 }
