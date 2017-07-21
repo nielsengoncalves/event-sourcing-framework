@@ -18,7 +18,7 @@ services:
  postgres1:
    image: postgres:9.6
    ports:
-     - "5431:5431"
+     - "5432:5432"
    environment:
      - POSTGRES_DB=my_event_sourcing
      - POSTGRES_USER=es_db
