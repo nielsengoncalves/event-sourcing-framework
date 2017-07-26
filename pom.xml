@@ -6,7 +6,7 @@
 
     <groupId>br.com.zup</groupId>
     <artifactId>event-sourcing-framework</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
     <modules>
         <module>event-sourcing-core</module>
         <module>event-store-connector</module>
