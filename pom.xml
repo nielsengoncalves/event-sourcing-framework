@@ -6,13 +6,13 @@
 
     <groupId>br.com.zup</groupId>
     <artifactId>event-sourcing-framework</artifactId>
-    <version>0.0.9-SNAPSHOT</version>
+    <version>0.0.10-SNAPSHOT</version>
     <modules>
         <module>event-sourcing-core</module>
         <module>event-store-connector</module>
         <module>relational-database-connector</module>
     </modules>
-    <packaging>pom</packaging>
+    <packaging>jar</packaging>
 
     <name>event-sourcing-framework</name>
 
