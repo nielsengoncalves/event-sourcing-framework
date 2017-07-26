@@ -12,7 +12,7 @@
         <module>event-store-connector</module>
         <module>relational-database-connector</module>
     </modules>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <name>event-sourcing-framework</name>
 
