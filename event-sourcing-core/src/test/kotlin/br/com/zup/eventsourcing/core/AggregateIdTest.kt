@@ -5,6 +5,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.time.LocalDateTime
 import java.util.*
+import kotlin.test.assertEquals
 
 class AggregateIdTest {
     @Test
@@ -63,6 +64,13 @@ class AggregateIdTest {
         val myAggregateIdSecond = AggregateId(UUID.randomUUID())
         assertTrue(!myAggregateIdFirst.hashCode().equals(myAggregateIdSecond.hashCode()))
         assertTrue(!myAggregateIdSecond.hashCode().equals(myAggregateIdFirst.hashCode()))
+    }
+
+    @Test
+    fun aggregateIdString() {
+        val id = UUID.randomUUID().toString()
+        val myAggregateId = AggregateId(id)
+        assertEquals(id, myAggregateId.value)
     }
 
 }
