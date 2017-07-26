@@ -14,7 +14,7 @@ class JacksonExtensionTest {
         val id = UUID.randomUUID()
         val json = "{\"id\": { \"value\": \"$id\"}}"
         val obj = json.jsonToObject(MyAggregateRoot::class.java)
-        assertEquals(id, obj.id.value)
+        assertEquals(id.toString(), obj.id.value)
     }
 
     @Test

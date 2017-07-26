@@ -17,7 +17,7 @@ class MyAggregateRootTest {
         val myAggregate = MyAggregateRoot(AggregateId(id))
         assertTrue(myAggregate.event is CreateEvent)
         assertEquals(1, myAggregate.events.count { it is CreateEvent })
-        assertEquals(id, myAggregate.id.value)
+        assertEquals(id.toString(), myAggregate.id.value)
         assertEquals("OPENED", myAggregate.status)
         assertEquals(-1, myAggregate.version.value)
     }
@@ -29,7 +29,7 @@ class MyAggregateRootTest {
         myAggregate.modify()
         assertTrue(myAggregate.event is ModifyEvent)
         assertEquals(1, myAggregate.events.count { it is ModifyEvent })
-        assertEquals(id, myAggregate.id.value)
+        assertEquals(id.toString(), myAggregate.id.value)
         assertEquals("ModifyEvent", myAggregate.status)
         assertEquals(-1, myAggregate.version.value)
     }
