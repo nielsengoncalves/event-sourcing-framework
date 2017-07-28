@@ -6,6 +6,7 @@ import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.eventstore.config.BaseTest
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepository
+import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepositoryWithoutLocking
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRoot
 import eventstore.WrongExpectedVersionException
 import org.junit.Assert.assertEquals
@@ -17,6 +18,9 @@ class MyAggregateRootRepositoryTest : BaseTest() {
 
     @Autowired
     lateinit var myAggregateRepository: MyAggregateRepository
+
+    @Autowired
+    lateinit var myAggregateRepositoryWithoutLocking: MyAggregateRepositoryWithoutLocking
 
     @Test
     fun saveMyAggregate_WithoutMetaData() {

@@ -26,7 +26,7 @@ import scala.concurrent.duration.Duration
 import java.nio.charset.Charset
 
 
-abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
+abstract class EventStoreRepository<T : AggregateRoot>(val settings: Settings = Settings()) : Repository<T>() {
     val actorSystem = ActorSystem.create()!!
     val esConnection: EsConnection = EsConnectionFactory.create(actorSystem)
     private val LOG = LogManager.getLogger(this.javaClass)
@@ -69,10 +69,13 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
     }
 
     private fun getExceptedVersion(expectedVersion: Int): ExpectedVersion? {
-        if (expectedVersion == -1)
-            return ExpectedVersion.`NoStream$`.`MODULE$`
-        else
-            return ExpectedVersion.Exact(expectedVersion)
+        if (settings.optimisticLockEnabled) {
+            if (expectedVersion == -1)
+                return ExpectedVersion.`NoStream$`.`MODULE$`
+            else
+                return ExpectedVersion.Exact(expectedVersion)
+        } else
+            return ExpectedVersion.`Any$`.`MODULE$`
     }
 
     private fun validateSaveMessageResult(aggregate: T, message: Any?) {

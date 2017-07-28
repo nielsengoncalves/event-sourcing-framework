@@ -143,6 +143,12 @@ repository or a relational database repository implementation
 @Service
 open class MyAggregateRepository : EventStoreRepository<MyAggregate>()
  ```
+ The EventStoreRepository has the option to work with optimistic locking which is the default behavior, you can 
+ disable it like in the example below
+ ```kotlin
+ @Service
+ open class MyAggregateRepository : EventStoreRepository<MyAggregate>(Settings(optimisticLockEnabled = false))
+  ```
  
  ```kotlin
  @Service
@@ -162,11 +168,12 @@ open class MyAggregateRepository : EventStoreRepository<MyAggregate>()
  
  ```kotlin
 @Service
-open class MyAggregateSubscriber : PersistentAggregateSubscriber<MyAggregate>()
+open class MyAggregateSubscriber(eventHandler: MyEventHandler) : 
+            PersistentAggregateSubscriber<MyAggregateRoot>(eventHandler = eventHandler)
  ```
  
- And since someone need to handle the messages that will rise you should implement the 
- `EventHandle` interface, we use Spring to inject it so annotate you implementation
+ And since someone need to handle the messages that will rise, you should implement the 
+ `EventHandle` interface.
  
  To be better handle the subscriber does not start listening upon it's creation, you should call method `start()`. and 
  for customization you can pass the subscription group name as the constructor parameter, if not it will try to listen to 
