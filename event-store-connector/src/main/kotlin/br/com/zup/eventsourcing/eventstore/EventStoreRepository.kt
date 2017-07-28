@@ -1,5 +1,6 @@
 package br.com.zup.eventsourcing.eventstore
 
+import akka.actor.ActorSystem
 import akka.actor.Status
 import akka.util.Timeout
 import br.com.zup.eventsourcing.core.AggregateId
@@ -16,19 +17,19 @@ import eventstore.ReadStreamEventsCompleted
 import eventstore.StreamNotFoundException
 import eventstore.WriteResult
 import eventstore.j.EsConnection
+import eventstore.j.EsConnectionFactory
 import eventstore.j.EventDataBuilder
 import org.apache.logging.log4j.LogManager
-import org.springframework.beans.factory.annotation.Autowired
 import scala.concurrent.Await
 import scala.concurrent.Future
 import scala.concurrent.duration.Duration
 import java.nio.charset.Charset
 
 
-abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
+abstract class EventStoreRepository<T : AggregateRoot>(val settings: Settings = Settings()) : Repository<T>() {
+    val actorSystem = ActorSystem.create()!!
+    val esConnection: EsConnection = EsConnectionFactory.create(actorSystem)
     private val LOG = LogManager.getLogger(this.javaClass)
-
-    @Autowired lateinit var connection: EsConnection
 
     override fun save(aggregateRoot: T) {
         return save(aggregateRoot, MetaData())
@@ -56,7 +57,7 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
                         .jsonMetadata(metaData.objectToJson())
                         .build()
             }
-            val future: Future<WriteResult> = connection.writeEvents(
+            val future: Future<WriteResult> = esConnection.writeEvents(
                     "${aggregate.javaClass.simpleName}-${aggregate.id.value}",
                     getExceptedVersion(aggregate.version.value),
                     items,
@@ -68,10 +69,13 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
     }
 
     private fun getExceptedVersion(expectedVersion: Int): ExpectedVersion? {
-        if (expectedVersion == -1)
-            return ExpectedVersion.`NoStream$`.`MODULE$`
-        else
-            return ExpectedVersion.Exact(expectedVersion)
+        if (settings.optimisticLockEnabled) {
+            if (expectedVersion == -1)
+                return ExpectedVersion.`NoStream$`.`MODULE$`
+            else
+                return ExpectedVersion.Exact(expectedVersion)
+        } else
+            return ExpectedVersion.`Any$`.`MODULE$`
     }
 
     private fun validateSaveMessageResult(aggregate: T, message: Any?) {
@@ -151,7 +155,7 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
 
     private fun readStreamEventsFromBeginning(aggregateId: AggregateId): ReadStreamEventsCompleted {
         val timeout = Timeout(Duration.create(60, "seconds"))
-        val future = connection.readStreamEventsForward(getGenericName() + "-" + aggregateId.value, EventNumber.Exact(0),
+        val future = esConnection.readStreamEventsForward(getGenericName() + "-" + aggregateId.value, EventNumber.Exact(0),
                 4000,
                 true,
                 null)
