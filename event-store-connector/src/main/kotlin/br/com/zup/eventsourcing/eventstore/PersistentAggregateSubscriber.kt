@@ -2,26 +2,22 @@ package br.com.zup.eventsourcing.eventstore
 
 import akka.actor.ActorSystem
 import br.com.zup.eventsourcing.core.AggregateRoot
-import br.com.zup.eventsourcing.eventstore.config.SpringExtension
+import br.com.zup.eventsourcing.core.EventHandler
 import eventstore.EventStream
 import eventstore.PersistentSubscriptionActor
 import eventstore.Settings
 import eventstore.tcp.ConnectionActor
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.stereotype.Component
 import java.lang.reflect.ParameterizedType
 
-@Component
-abstract class PersistentAggregateSubscriber<T : AggregateRoot>(val subscriptionGroupName: String = "") {
+abstract class PersistentAggregateSubscriber<T : AggregateRoot>(val subscriptionGroupName: String = "", val eventHandler: EventHandler) {
 
-    @Autowired lateinit var actorSystem: ActorSystem
-    @Autowired lateinit var springExtension: SpringExtension
+    val actorSystem = ActorSystem.create()!!
 
     open fun start() {
 
         val connection = actorSystem.actorOf(ConnectionActor.getProps())
 
-        val subscriptionListener = actorSystem.actorOf(springExtension.props(PersistentSubscriptionListener.BEAN_NAME))
+        val subscriptionListener = actorSystem.actorOf(PersistentSubscriptionListener.props(eventHandler))
 
         val groupName = getGroupName(subscriptionGroupName)
         actorSystem.actorOf(PersistentSubscriptionActor.props(connection,

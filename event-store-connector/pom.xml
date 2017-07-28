@@ -17,10 +17,6 @@
             <artifactId>event-sourcing-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.geteventstore</groupId>
             <artifactId>eventstore-client_2.11</artifactId>
             <version>${eventstore.version}</version>
@@ -49,6 +45,11 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

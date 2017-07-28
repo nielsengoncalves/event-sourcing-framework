@@ -1,6 +1,7 @@
 package br.com.zup.eventsourcing.eventstore
 
 import akka.actor.AbstractActor
+import akka.actor.Props
 import akka.event.Logging
 import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.AggregateVersion
@@ -10,19 +11,17 @@ import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.config.jsonToObject
 import eventstore.PersistentSubscriptionActor
 import eventstore.ResolvedEvent
-import org.springframework.beans.factory.config.ConfigurableBeanFactory
-import org.springframework.context.annotation.Scope
-import org.springframework.stereotype.Component
 import java.nio.charset.Charset
 import java.util.*
 
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-class PersistentSubscriptionListener(val eventHandler: EventHandler) :
-        AbstractActor() {
+
+class PersistentSubscriptionListener(val eventHandler: EventHandler) : AbstractActor() {
     companion object {
-        val BEAN_NAME = "persistentSubscriptionListener"
+        fun props(eventHandler: EventHandler): Props {
+            return Props.create(PersistentSubscriptionListener::class.java) { PersistentSubscriptionListener(eventHandler) }
+        }
     }
+
 
     private val log = Logging.getLogger(context.system, this)
 

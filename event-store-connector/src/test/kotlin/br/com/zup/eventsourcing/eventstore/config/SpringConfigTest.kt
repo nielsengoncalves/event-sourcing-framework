@@ -1,8 +1,8 @@
 package br.com.zup.eventsourcing.eventstore.config
 
+import org.springframework.context.annotation.ComponentScan
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Import
 
 @Configuration
-@Import(br.com.zup.eventsourcing.eventstore.config.EventStoreConfig::class)
+@ComponentScan(basePackages = arrayOf("br.com.zup.eventsourcing.eventstore"))
 open class SpringConfigTest
