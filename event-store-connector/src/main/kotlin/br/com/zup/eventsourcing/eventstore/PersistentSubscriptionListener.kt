@@ -53,8 +53,8 @@ class PersistentSubscriptionListener(val eventHandler: EventHandler) : AbstractA
 
     }
 
-    private fun getAggregateId(resolvedEvent: ResolvedEvent): UUID {
-        return UUID.fromString(extractAggregateId(resolvedEvent.linkedEvent().streamId().value()))
+    private fun getAggregateId(resolvedEvent: ResolvedEvent): String {
+        return extractAggregateId(resolvedEvent.linkedEvent().streamId().value())
     }
 
     private fun extractAggregateId(value: String): String {
