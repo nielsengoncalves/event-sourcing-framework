@@ -10,5 +10,6 @@
     <include file="classpath:config/liquibase/changelog/20170726110000_alter_column_aggregate_id.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170726110900_drop_aggregate_index.xml" relativeToChangelogFile="false"/>
     <include file="classpath:config/liquibase/changelog/20170726111200_aggregate_index.xml" relativeToChangelogFile="false"/>
+    <include file="classpath:config/liquibase/changelog/20170816170000_modify_primary_key.xml" relativeToChangelogFile="false"/>
 
 </databaseChangeLog>
