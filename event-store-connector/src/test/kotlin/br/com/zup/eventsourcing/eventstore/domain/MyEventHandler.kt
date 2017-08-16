@@ -1,10 +1,6 @@
 package br.com.zup.eventsourcing.eventstore.domain
 
-import br.com.zup.eventsourcing.core.AggregateId
-import br.com.zup.eventsourcing.core.AggregateVersion
-import br.com.zup.eventsourcing.core.Event
-import br.com.zup.eventsourcing.core.EventHandler
-import br.com.zup.eventsourcing.core.MetaData
+import br.com.zup.eventsourcing.core.*
 import org.springframework.stereotype.Component
 
 @Component

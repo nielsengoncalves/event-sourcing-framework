@@ -3,12 +3,7 @@ package br.com.zup.eventsourcing.eventstore
 import akka.actor.ActorSystem
 import akka.actor.Status
 import akka.util.Timeout
-import br.com.zup.eventsourcing.core.AggregateId
-import br.com.zup.eventsourcing.core.AggregateRoot
-import br.com.zup.eventsourcing.core.AggregateVersion
-import br.com.zup.eventsourcing.core.Event
-import br.com.zup.eventsourcing.core.MetaData
-import br.com.zup.eventsourcing.core.Repository
+import br.com.zup.eventsourcing.core.*
 import br.com.zup.eventsourcing.core.config.jsonToObject
 import br.com.zup.eventsourcing.core.config.objectToJson
 import eventstore.EventNumber
