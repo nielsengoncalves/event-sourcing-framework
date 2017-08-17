@@ -1,11 +1,6 @@
 package br.com.zup.eventsourcing.relationaldb
 
-import br.com.zup.eventsourcing.core.AggregateId
-import br.com.zup.eventsourcing.core.AggregateRoot
-import br.com.zup.eventsourcing.core.AggregateVersion
-import br.com.zup.eventsourcing.core.Event
-import br.com.zup.eventsourcing.core.MetaData
-import br.com.zup.eventsourcing.core.Repository
+import br.com.zup.eventsourcing.core.*
 import br.com.zup.eventsourcing.core.config.jsonToObject
 import br.com.zup.eventsourcing.core.config.objectToJson
 import br.com.zup.eventsourcing.relationaldb.extractor.MyAggregateEventsMapper
@@ -14,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 
 
-abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val jdbcTemplate: JdbcTemplate) :
-        Repository<T>() {
+abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val jdbcTemplate: JdbcTemplate, val
+                                                                    settings: Settings = Settings()) : Repository<T>() {
 
     private val LOG = LogManager.getLogger(this.javaClass)
 
@@ -29,6 +24,25 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
         val META_DATA_COLUMN = "META_DATA"
         val AGGREGATE_TYPE = "AGGREGATE_TYPE"
         val CREATED_AT_COLUMN = "CREATED_AT"
+        val SQL_LOCK_ENABLE = "insert into $TABLE_NAME  ($ID_COLUMN, " +
+                                                        "$AGGREGATE_ID_COLUMN, " +
+                                                        "$VERSION_COLUMN, " +
+                                                        "$EVENT_TYPE_COLUMN, " +
+                                                        "$EVENT_COLUMN, " +
+                                                        "$META_DATA_COLUMN, " +
+                                                        "$AGGREGATE_TYPE, " +
+                                                        "$CREATED_AT_COLUMN) " +
+                                    "values (?, ?, ?, ?, ?, ?, ?, now())"
+
+        val SQL_LOCK_DISABLE = "insert into $TABLE_NAME ($ID_COLUMN, " +
+                                                        "$AGGREGATE_ID_COLUMN, " +
+                                                        "$VERSION_COLUMN, " +
+                                                        "$EVENT_TYPE_COLUMN, " +
+                                                        "$EVENT_COLUMN, " +
+                                                        "$META_DATA_COLUMN, " +
+                                                        "$AGGREGATE_TYPE, " +
+                                                        "$CREATED_AT_COLUMN) " +
+                                    "values (?, ?, (select count($ID_COLUMN) from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ?), ?, ?, ?, ?, now())"
     }
 
     override fun save(aggregateRoot: T) {
@@ -40,23 +54,38 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     }
 
     fun saveAggregate(aggregateRoot: T, metaData: MetaData? = null) {
+        if (settings.optimisticLockEnabled) {
+            saveOptimisticLockEnabled(aggregateRoot, metaData)
+        } else {
+            saveOptimisticLockDisable(aggregateRoot, metaData)
+        }
+    }
+
+    private fun saveOptimisticLockEnabled(aggregateRoot: T, metaData: MetaData?) {
         var version = aggregateRoot.version.value + 1
         aggregateRoot.events.forEach {
-            val sql = "insert into $TABLE_NAME ($ID_COLUMN, $AGGREGATE_ID_COLUMN, $VERSION_COLUMN, " +
-                    "$EVENT_TYPE_COLUMN, $EVENT_COLUMN, $META_DATA_COLUMN, $AGGREGATE_TYPE, $CREATED_AT_COLUMN) " +
-                    "values (?, ?, ?, ?, ?, ?, ?, now())"
-            jdbcTemplate.update(sql, it.id.value, aggregateRoot.id.value, version, it
+            jdbcTemplate.update(SQL_LOCK_ENABLE, it.id.value, aggregateRoot.id.value, version, it
                     .retrieveEventType().value, it.retrieveJsonData().data, metaData.objectToJson(), this
                     .getGenericCanonicalName())
             version += 1
         }
     }
 
+    private fun saveOptimisticLockDisable(aggregateRoot: T, metaData: MetaData?) {
+        aggregateRoot.events.forEach {
+            jdbcTemplate.update(SQL_LOCK_DISABLE, it.id.value, aggregateRoot.id.value, aggregateRoot.id.value, it.retrieveEventType
+            ().value,
+                    it.retrieveJsonData().data, metaData.objectToJson(), this.getGenericCanonicalName())
+        }
+    }
+
+
     override fun get(aggregateId: AggregateId): T {
-        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
-        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value)
-        if (events.isEmpty()) throw NotFoundException()
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
+        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? and $AGGREGATE_TYPE = ? order by " +
+                "$VERSION_COLUMN"
+        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value, aggregateClass.canonicalName)
+        if (events.isEmpty()) throw NotFoundException()
         val aggregate = aggregateClass.newInstance()
         val list = mutableListOf<Event>()
         var version = 0
@@ -70,8 +99,10 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     }
 
     override fun getLastMetaData(aggregateId: AggregateId): MetaData {
-        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? order by $VERSION_COLUMN"
-        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value)
+        val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
+        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? and $AGGREGATE_TYPE = ? order by " +
+                "$VERSION_COLUMN"
+        val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value, aggregateClass.canonicalName)
         if (events.isEmpty()) throw NotFoundException()
         val lastEvent = events.last()
         return lastEvent.metaData.jsonToObject(MetaData::class.java)
