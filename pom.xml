@@ -6,7 +6,7 @@
 
     <groupId>br.com.zup</groupId>
     <artifactId>event-sourcing-framework</artifactId>
-    <version>0.0.13-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <modules>
         <module>event-sourcing-core</module>
         <module>event-store-connector</module>
@@ -276,7 +276,7 @@
         <connection>scm:git@github.com:ZupIT/event-sourcing-framework</connection>
         <url>https://github.com/ZupIT/event-sourcing-framework</url>
         <developerConnection>scm:git:git@github.com:ZupIT/event-sourcing-framework</developerConnection>
-        <tag>0.0.13</tag>
+        <tag>1.0.0</tag>
     </scm>
 
 </project>
