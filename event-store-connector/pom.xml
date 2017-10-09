@@ -3,7 +3,7 @@
     <parent>
         <artifactId>event-sourcing-framework</artifactId>
         <groupId>br.com.zup</groupId>
-        <version>1.0.0</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -62,9 +62,4 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-
-  <scm>
-    <tag>1.0.0</tag>
-  </scm>
 </project>
