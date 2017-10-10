@@ -18,15 +18,15 @@ class RepositoryManagerTest {
     @Test
     fun save_withoutMetaData() {
         repositoryManager.save(MyAggregateRoot(AggregateId(UUID.randomUUID())))
-        verify(repository1, times(1)).save(any())
-        verify(repository2, times(1)).save(any())
+        verify(repository1, times(1)).save(any<MyAggregateRoot>(), any<Repository.OptimisticLock>())
+        verify(repository2, times(1)).save(any<MyAggregateRoot>(), any<Repository.OptimisticLock>())
     }
 
     @Test
     fun save_withMetaData() {
         repositoryManager.save(MyAggregateRoot(AggregateId(UUID.randomUUID())), MetaData())
-        verify(repository1, times(1)).save(any(), any())
-        verify(repository2, times(1)).save(any(), any())
+        verify(repository1, times(1)).save(any(), any(), any())
+        verify(repository2, times(1)).save(any(), any(), any())
     }
 
     @Test

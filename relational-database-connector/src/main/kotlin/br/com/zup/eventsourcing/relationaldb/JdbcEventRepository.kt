@@ -9,8 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.JdbcTemplate
 
 
-abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val jdbcTemplate: JdbcTemplate, val
-                                                                    settings: Settings = Settings()) : Repository<T>() {
+abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val jdbcTemplate: JdbcTemplate) : Repository<T>() {
 
     private val LOG = LogManager.getLogger(this.javaClass)
 
@@ -45,16 +44,16 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
                                     "values (?, ?, (select count($ID_COLUMN) from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ?), ?, ?, ?, ?, now())"
     }
 
-    override fun save(aggregateRoot: T) {
-        saveAggregate(aggregateRoot, null)
+    override fun save(aggregateRoot: T, lock: Repository.OptimisticLock) {
+        saveAggregate(aggregateRoot, null, lock)
     }
 
-    override fun save(aggregateRoot: T, metaData: MetaData) {
-        saveAggregate(aggregateRoot, metaData)
+    override fun save(aggregateRoot: T, metaData: MetaData, lock: OptimisticLock) {
+        saveAggregate(aggregateRoot, metaData, lock)
     }
 
-    fun saveAggregate(aggregateRoot: T, metaData: MetaData? = null) {
-        if (settings.optimisticLockEnabled) {
+    private fun saveAggregate(aggregateRoot: T, metaData: MetaData? = null, lock: OptimisticLock) {
+        if (lock == OptimisticLock.ENABLED) {
             saveOptimisticLockEnabled(aggregateRoot, metaData)
         } else {
             saveOptimisticLockDisable(aggregateRoot, metaData)

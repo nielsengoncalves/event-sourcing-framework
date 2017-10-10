@@ -6,11 +6,11 @@ import br.com.zup.eventsourcing.core.Repository
 
 
 class MyRepository : Repository<MyAggregateRoot>() {
-    override fun save(aggregateRoot: MyAggregateRoot) {
+    override fun save(aggregateRoot: MyAggregateRoot, metaData: MetaData, lock: OptimisticLock) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun save(aggregateRoot: MyAggregateRoot, metaData: MetaData) {
+    override fun save(aggregateRoot: MyAggregateRoot, lock: Repository.OptimisticLock) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

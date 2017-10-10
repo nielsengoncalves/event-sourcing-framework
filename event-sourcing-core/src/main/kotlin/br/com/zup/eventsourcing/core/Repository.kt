@@ -3,8 +3,8 @@ package br.com.zup.eventsourcing.core
 import java.lang.reflect.ParameterizedType
 
 abstract class Repository<T : AggregateRoot> {
-    abstract fun save(aggregateRoot: T)
-    abstract fun save(aggregateRoot: T, metaData: MetaData)
+    abstract fun save(aggregateRoot: T, lock: Repository.OptimisticLock = OptimisticLock.ENABLED)
+    abstract fun save(aggregateRoot: T, metaData: MetaData, lock: Repository.OptimisticLock = OptimisticLock.ENABLED)
     abstract fun get(aggregateId: AggregateId): T
     abstract fun getLastMetaData(aggregateId: AggregateId): MetaData
 
@@ -19,4 +19,9 @@ abstract class Repository<T : AggregateRoot> {
     }
 
     class NotFoundException : Throwable()
+
+    enum class OptimisticLock {
+        DISABLED,
+        ENABLED
+    }
 }

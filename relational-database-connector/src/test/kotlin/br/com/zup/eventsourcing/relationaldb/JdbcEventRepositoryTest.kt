@@ -5,7 +5,6 @@ import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.relationaldb.config.RepositoryBaseTest
 import br.com.zup.eventsourcing.relationaldb.domain.MyAggregateRoot
-import br.com.zup.eventsourcing.relationaldb.domain.RepositoryOptimisticLockDisable
 import br.com.zup.eventsourcing.relationaldb.domain.RepositoryOptimisticLockEnabled
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,8 +14,6 @@ import kotlin.test.assertEquals
 class JdbcEventRepositoryTest : RepositoryBaseTest() {
 
     @Autowired lateinit var repositoryOptimisticLockEnabled: RepositoryOptimisticLockEnabled
-
-    @Autowired lateinit var repositoryOptimisticLockDisable: RepositoryOptimisticLockDisable
 
     @Test
     fun saveAggregate_withoutMetaData_withLock() {
@@ -31,7 +28,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
-        repositoryOptimisticLockDisable.save(myAggregate)
+        repositoryOptimisticLockEnabled.save(myAggregate, Repository.OptimisticLock.DISABLED)
     }
 
     @Test
@@ -51,7 +48,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         val metaData = MetaData()
         metaData.set("teste", myAggregate)
         myAggregate.modify()
-        repositoryOptimisticLockDisable.save(myAggregate, metaData)
+        repositoryOptimisticLockEnabled.save(myAggregate, metaData, Repository.OptimisticLock.DISABLED)
     }
 
     @Test
@@ -71,9 +68,9 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         val id = UUID.randomUUID()
         val myAggregate = MyAggregateRoot(AggregateId(id))
         myAggregate.modify()
-        repositoryOptimisticLockDisable.save(myAggregate)
+        repositoryOptimisticLockEnabled.save(myAggregate, Repository.OptimisticLock.DISABLED)
 
-        val mySavedAggregate = repositoryOptimisticLockDisable.get(AggregateId(id))
+        val mySavedAggregate = repositoryOptimisticLockEnabled.get(AggregateId(id))
         assertEquals(myAggregate, mySavedAggregate)
         assertEquals(myAggregate.status, mySavedAggregate.status)
     }
@@ -95,8 +92,8 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         val myAggregate = MyAggregateRoot(aggregateId)
         val metaData = MetaData()
         metaData.set("teste", "teste1")
-        repositoryOptimisticLockDisable.save(myAggregate, metaData)
-        val newMetaData = repositoryOptimisticLockDisable.getLastMetaData(aggregateId)
+        repositoryOptimisticLockEnabled.save(myAggregate, metaData, Repository.OptimisticLock.DISABLED)
+        val newMetaData = repositoryOptimisticLockEnabled.getLastMetaData(aggregateId)
         assertEquals("teste1", newMetaData["teste"])
     }
 
@@ -121,12 +118,12 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         val myAggregate = MyAggregateRoot(aggregateId)
         val metaData = MetaData()
         metaData.set("teste", "teste1")
-        repositoryOptimisticLockDisable.save(myAggregate, metaData)
-        val newMyAggregate = repositoryOptimisticLockDisable.get(aggregateId)
+        repositoryOptimisticLockEnabled.save(myAggregate, metaData, Repository.OptimisticLock.DISABLED)
+        val newMyAggregate = repositoryOptimisticLockEnabled.get(aggregateId)
         metaData.set("teste", "teste2")
         newMyAggregate.modify()
-        repositoryOptimisticLockDisable.save(newMyAggregate, metaData)
-        val newMetaData = repositoryOptimisticLockDisable.getLastMetaData(aggregateId)
+        repositoryOptimisticLockEnabled.save(myAggregate, metaData, Repository.OptimisticLock.DISABLED)
+        val newMetaData = repositoryOptimisticLockEnabled.getLastMetaData(aggregateId)
         assertEquals("teste2", newMetaData["teste"])
     }
 
@@ -139,7 +136,7 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
     @Test(expected = Repository.NotFoundException::class)
     fun getNotFoundException_withoutLock() {
         val aggregateID = AggregateId(UUID.randomUUID())
-        repositoryOptimisticLockDisable.get(aggregateID)
+        repositoryOptimisticLockEnabled.get(aggregateID)
     }
 
 }
