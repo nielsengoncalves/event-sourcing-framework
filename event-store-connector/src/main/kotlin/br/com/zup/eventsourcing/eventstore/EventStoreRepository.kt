@@ -21,20 +21,19 @@ import scala.concurrent.duration.Duration
 import java.nio.charset.Charset
 
 
-abstract class EventStoreRepository<T : AggregateRoot>(val settings: Settings = Settings()) : Repository<T>() {
+abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
     val actorSystem = ActorSystem.create()!!
     val esConnection: EsConnection = EsConnectionFactory.create(actorSystem)
     private val LOG = LogManager.getLogger(this.javaClass)
 
-    override fun save(aggregateRoot: T) {
-        return save(aggregateRoot, MetaData())
+    override fun save(aggregateRoot: T, lock: OptimisticLock) {
+        return save(aggregateRoot, MetaData(), lock)
     }
 
-    override fun save(aggregateRoot: T, metaData: MetaData) {
-
+    override fun save(aggregateRoot: T, metaData: MetaData, lock: OptimisticLock) {
         LOG.debug("receive save message with aggregate: $aggregateRoot and meta data: $metaData")
         try {
-            saveEventsSynchronously(aggregateRoot, metaData)
+            saveEventsSynchronously(aggregateRoot, metaData, lock)
         } catch (e: Exception) {
             LOG.error("error saving aggregate: $aggregateRoot and meta data: $metaData", e)
             throw e
@@ -42,7 +41,7 @@ abstract class EventStoreRepository<T : AggregateRoot>(val settings: Settings = 
         LOG.debug("aggregate saved: $aggregateRoot and meta data: $metaData")
     }
 
-    private fun saveEventsSynchronously(aggregate: T, metaData: MetaData) {
+    private fun saveEventsSynchronously(aggregate: T, metaData: MetaData, lock: OptimisticLock) {
         if (aggregate.events.size > 0) {
             val timeout = Timeout(Duration.create(60, "seconds"))
             val items = aggregate.events.map { event ->
@@ -54,7 +53,7 @@ abstract class EventStoreRepository<T : AggregateRoot>(val settings: Settings = 
             }
             val future: Future<WriteResult> = esConnection.writeEvents(
                     "${aggregate.javaClass.simpleName}-${aggregate.id.value}",
-                    getExceptedVersion(aggregate.version.value),
+                    getExceptedVersion(aggregate.version.value, lock),
                     items,
                     null,
                     false)
@@ -63,14 +62,18 @@ abstract class EventStoreRepository<T : AggregateRoot>(val settings: Settings = 
         }
     }
 
-    private fun getExceptedVersion(expectedVersion: Int): ExpectedVersion? {
-        if (settings.optimisticLockEnabled) {
-            if (expectedVersion == -1)
-                return ExpectedVersion.`NoStream$`.`MODULE$`
-            else
-                return ExpectedVersion.Exact(expectedVersion)
-        } else
-            return ExpectedVersion.`Any$`.`MODULE$`
+    private fun getExceptedVersion(expectedVersion: Int, lock: OptimisticLock): ExpectedVersion? {
+        return when(lock) {
+            OptimisticLock.ENABLED -> {
+                if (expectedVersion == -1)
+                    ExpectedVersion.`NoStream$`.`MODULE$`
+                else
+                    ExpectedVersion.Exact(expectedVersion)
+            }
+            OptimisticLock.DISABLED -> {
+                ExpectedVersion.`Any$`.`MODULE$`
+            }
+        }
     }
 
     private fun validateSaveMessageResult(aggregate: T, message: Any?) {

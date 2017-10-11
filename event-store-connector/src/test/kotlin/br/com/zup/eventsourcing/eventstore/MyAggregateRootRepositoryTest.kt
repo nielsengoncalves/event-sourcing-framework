@@ -6,7 +6,6 @@ import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.eventstore.config.BaseTest
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepository
-import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepositoryWithoutLocking
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRoot
 import eventstore.WrongExpectedVersionException
 import org.junit.Assert.assertEquals
@@ -19,8 +18,6 @@ class MyAggregateRootRepositoryTest : BaseTest() {
     @Autowired
     lateinit var myAggregateRepository: MyAggregateRepository
 
-    @Autowired
-    lateinit var myAggregateRepositoryWithoutLocking: MyAggregateRepositoryWithoutLocking
 
     @Test
     fun saveMyAggregate_WithoutMetaData() {
@@ -84,9 +81,28 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         myAggregate.version = AggregateVersion(3)
         myAggregateRepository.save(myAggregate, metaData)
         assertEquals(1, myAggregate.events.size)
-
     }
 
+    @Test
+    fun saveWithoutOptimisticLock() {
+        val id = UUID.randomUUID()
+        val myAggregate = MyAggregateRoot(AggregateId(id))
+        val metaData = MetaData()
+        metaData.set("teste2", myAggregate)
+        myAggregateRepository.save(myAggregate, metaData)
+
+        val agg1 = myAggregateRepository.get(myAggregate.id)
+        val agg2 = myAggregateRepository.get(myAggregate.id)
+        assertEquals(agg1.version, agg2.version)
+
+        agg1.modify()
+        myAggregateRepository.save(agg1, metaData, Repository.OptimisticLock.DISABLED)
+
+        agg2.modify()
+        myAggregateRepository.save(agg2, metaData, Repository.OptimisticLock.DISABLED)
+
+        assertEquals(AggregateVersion(2), myAggregateRepository.get(myAggregate.id).version)
+    }
 
     @Test
     fun saveMyAggregateCreateNoModifyAndSaveAgain() {
