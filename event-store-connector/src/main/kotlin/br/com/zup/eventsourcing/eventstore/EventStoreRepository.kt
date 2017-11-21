@@ -24,21 +24,21 @@ import java.nio.charset.Charset
 abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
     val actorSystem = ActorSystem.create()!!
     val esConnection: EsConnection = EsConnectionFactory.create(actorSystem)
-    private val LOG = LogManager.getLogger(this.javaClass)
+    private val log = LogManager.getLogger(this.javaClass)
 
-    override fun save(aggregateRoot: T, lock: OptimisticLock) {
-        return save(aggregateRoot, MetaData(), lock)
-    }
+    open fun getStreamName(aggregateId: AggregateId): String = "${getGenericName()}-${aggregateId.value}"
+
+    override fun save(aggregateRoot: T, lock: OptimisticLock) = save(aggregateRoot, MetaData(), lock)
 
     override fun save(aggregateRoot: T, metaData: MetaData, lock: OptimisticLock) {
-        LOG.debug("receive save message with aggregate: $aggregateRoot and meta data: $metaData")
+        log.debug("received save message with aggregate: $aggregateRoot and meta data: $metaData")
         try {
             saveEventsSynchronously(aggregateRoot, metaData, lock)
         } catch (e: Exception) {
-            LOG.error("error saving aggregate: $aggregateRoot and meta data: $metaData", e)
+            log.error("error saving aggregate: $aggregateRoot and meta data: $metaData", e)
             throw e
         }
-        LOG.debug("aggregate saved: $aggregateRoot and meta data: $metaData")
+        log.debug("aggregate saved: $aggregateRoot and meta data: $metaData")
     }
 
     private fun saveEventsSynchronously(aggregate: T, metaData: MetaData, lock: OptimisticLock) {
@@ -52,7 +52,7 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
                         .build()
             }
             val future: Future<WriteResult> = esConnection.writeEvents(
-                    "${aggregate.javaClass.simpleName}-${aggregate.id.value}",
+                    getStreamName(aggregate.id),
                     getExceptedVersion(aggregate.version.value, lock),
                     items,
                     null,
@@ -80,26 +80,26 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
         if (message == null) {
             val aggregateGot = get(aggregate.id)
             if (aggregateGot.version.value == aggregate.version.value + 1) {
-                LOG.warn("is null, but we checked, the message is there, better look if server its ok: ")
+                log.warn("is null, but we checked, the message is there, better look if server its ok: ")
             } else {
-                LOG.warn("is null, and I dont know why so check if server its ok: ")
+                log.warn("is null, and I dont know why so check if server its ok: ")
                 throw InternalError()
             }
         } else if (message is WriteResult) {
-            LOG.debug("on WriteResult: " + message.toString())
+            log.debug("on WriteResult: " + message.toString())
         } else if (message is Status.Failure) {
-            LOG.error("on Status.Failure: " + message.toString())
+            log.error("on Status.Failure: " + message.toString())
             throw Exception(message.toString())
         } else {
-            LOG.error("on Failure: " + message.toString())
+            log.error("on Failure: " + message.toString())
             throw Exception(message.toString())
         }
     }
 
     override fun get(aggregateId: AggregateId): T {
-        LOG.debug("receive get message with aggregateId: $aggregateId")
+        log.debug("receive get message with aggregateId: $aggregateId")
         val message = tryReadStreamEventsFromBeginning(aggregateId)
-        LOG.debug("receive get message with aggregateId: $aggregateId and message $message")
+        log.debug("receive get message with aggregateId: $aggregateId and message $message")
         return replayAggregateRoot(message)
 
     }
@@ -120,13 +120,13 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
             (aggregate as T).load(events, AggregateVersion(version))
             return aggregate
         } else {
-            LOG.error("stream was empty: $readStreamEventsCompleted")
+            log.error("stream was empty: $readStreamEventsCompleted")
             throw NotFoundException()
         }
     }
 
     override fun getLastMetaData(aggregateId: AggregateId): MetaData {
-        LOG.debug("receive get meta data message with aggregateId: $aggregateId")
+        log.debug("receive get meta data message with aggregateId: $aggregateId")
         val message = tryReadStreamEventsFromBeginning(aggregateId)
         return getMetaDataFromLastEvent(message)
 
@@ -142,18 +142,17 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
         try {
             return readStreamEventsFromBeginning(aggregateId)
         } catch (e: StreamNotFoundException) {
-            LOG.warn("there is no aggregate with aggregateId: $aggregateId", e)
+            log.warn("there is no aggregate with aggregateId: $aggregateId", e)
             throw NotFoundException()
         } catch (e: Exception) {
-            LOG.error("was not able to find and aggregate with aggregateId: $aggregateId", e)
+            log.error("was not able to find and aggregate with aggregateId: $aggregateId", e)
             throw e
         }
-
     }
 
     private fun readStreamEventsFromBeginning(aggregateId: AggregateId): ReadStreamEventsCompleted {
         val timeout = Timeout(Duration.create(60, "seconds"))
-        val future = esConnection.readStreamEventsForward(getGenericName() + "-" + aggregateId.value, EventNumber.Exact(0),
+        val future = esConnection.readStreamEventsForward(getStreamName(aggregateId), EventNumber.Exact(0),
                 4000,
                 true,
                 null)
