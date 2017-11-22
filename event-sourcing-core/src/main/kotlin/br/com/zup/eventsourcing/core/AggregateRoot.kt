@@ -66,8 +66,7 @@ open class AggregateId(val value: String) {
         return true
     }
 
-    override fun hashCode(): Int {
-        return value.hashCode()
-    }
+    override fun hashCode(): Int = value.hashCode()
+    override fun toString(): String = value
 }
 

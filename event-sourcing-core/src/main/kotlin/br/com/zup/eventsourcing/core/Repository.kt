@@ -8,15 +8,15 @@ abstract class Repository<T : AggregateRoot> {
     abstract fun get(aggregateId: AggregateId): T
     abstract fun getLastMetaData(aggregateId: AggregateId): MetaData
 
-    protected fun getGenericName(): String {
-        return ((javaClass
-                .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).simpleName
-    }
 
-    protected fun getGenericCanonicalName(): String {
-        return ((javaClass
-                .genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>).canonicalName
-    }
+    protected fun getGenericClass(): Class<T> =
+            (javaClass.genericSuperclass as ParameterizedType).actualTypeArguments[0] as Class<T>
+
+    protected fun getGenericName(): String =
+            getGenericClass().simpleName
+
+    protected fun getGenericCanonicalName(): String =
+            getGenericClass().canonicalName
 
     class NotFoundException : Throwable()
 
