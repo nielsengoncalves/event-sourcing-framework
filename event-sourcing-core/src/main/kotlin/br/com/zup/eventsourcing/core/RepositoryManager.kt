@@ -3,12 +3,12 @@ package br.com.zup.eventsourcing.core
 class RepositoryManager<T : AggregateRoot>(val repositories: List<Repository<T>>) : Repository<T>() {
 
     override fun save(aggregateRoot: T, metaData: MetaData, lock: OptimisticLock) {
-        repositories.forEach { it.save(aggregateRoot, metaData) }
+        repositories.forEach { it.save(aggregateRoot, metaData, lock) }
         aggregateRoot.clearEvents()
     }
 
     override fun save(aggregateRoot: T, lock: Repository.OptimisticLock) {
-        repositories.forEach { it.save(aggregateRoot) }
+        repositories.forEach { it.save(aggregateRoot, lock) }
         aggregateRoot.clearEvents()
     }
 
