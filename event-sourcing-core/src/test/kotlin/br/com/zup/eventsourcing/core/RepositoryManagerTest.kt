@@ -17,30 +17,52 @@ class RepositoryManagerTest {
 
     @Test
     fun save_withoutMetaData() {
-        repositoryManager.save(MyAggregateRoot(AggregateId(UUID.randomUUID())))
-        verify(repository1, times(1)).save(any<MyAggregateRoot>(), any<Repository.OptimisticLock>())
-        verify(repository2, times(1)).save(any<MyAggregateRoot>(), any<Repository.OptimisticLock>())
+        val aggregateRoot = MyAggregateRoot(AggregateId(UUID.randomUUID()))
+        repositoryManager.save(aggregateRoot)
+        verify(repository1, times(1)).save(aggregateRoot, Repository.OptimisticLock.ENABLED)
+        verify(repository2, times(1)).save(aggregateRoot, Repository.OptimisticLock.ENABLED)
     }
 
     @Test
     fun save_withMetaData() {
-        repositoryManager.save(MyAggregateRoot(AggregateId(UUID.randomUUID())), MetaData())
-        verify(repository1, times(1)).save(any(), any(), any())
-        verify(repository2, times(1)).save(any(), any(), any())
+        val aggregateRoot = MyAggregateRoot(AggregateId(UUID.randomUUID()))
+        val metaData = MetaData()
+        repositoryManager.save(aggregateRoot, metaData, Repository.OptimisticLock.ENABLED)
+        verify(repository1, times(1)).save(aggregateRoot, metaData, Repository.OptimisticLock.ENABLED)
+        verify(repository2, times(1)).save(aggregateRoot, metaData, Repository.OptimisticLock.ENABLED)
     }
 
     @Test
     fun get() {
-        repositoryManager.get(AggregateId(UUID.randomUUID()))
-        verify(repository1, times(1)).get(any())
-        verify(repository2, times(0)).get(any())
+        val aggregateId = AggregateId(UUID.randomUUID())
+        repositoryManager.get(aggregateId)
+        verify(repository1, times(1)).get(aggregateId)
+        verify(repository2, times(0)).get(aggregateId)
     }
 
     @Test
     fun getLastMetaData() {
-        repositoryManager.getLastMetaData(AggregateId(UUID.randomUUID()))
-        verify(repository1, times(1)).getLastMetaData(any())
-        verify(repository2, times(0)).getLastMetaData(any())
+        val aggregateId = AggregateId(UUID.randomUUID())
+        repositoryManager.getLastMetaData(aggregateId)
+        verify(repository1, times(1)).getLastMetaData(aggregateId)
+        verify(repository2, times(0)).getLastMetaData(aggregateId)
+    }
+
+    @Test
+    fun managerMustDelegateDisabledOptimisticLockToRepositories(){
+        val aggregateRoot = MyAggregateRoot(AggregateId(UUID.randomUUID()))
+        repositoryManager.save(aggregateRoot, Repository.OptimisticLock.DISABLED)
+        verify(repository1, times(1)).save(aggregateRoot, Repository.OptimisticLock.DISABLED)
+        verify(repository2, times(1)).save(aggregateRoot, Repository.OptimisticLock.DISABLED)
+    }
+
+    @Test
+    fun delegateDisabledOptimisticLockToRepositories_withMetaData() {
+        val aggregateRoot = MyAggregateRoot(AggregateId(UUID.randomUUID()))
+        val metaData = MetaData()
+        repositoryManager.save(aggregateRoot, metaData, Repository.OptimisticLock.DISABLED)
+        verify(repository1, times(1)).save(aggregateRoot, metaData, Repository.OptimisticLock.DISABLED)
+        verify(repository2, times(1)).save(aggregateRoot, metaData, Repository.OptimisticLock.DISABLED)
     }
 
 }
