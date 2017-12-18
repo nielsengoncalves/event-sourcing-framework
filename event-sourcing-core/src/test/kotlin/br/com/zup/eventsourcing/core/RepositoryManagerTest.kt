@@ -65,4 +65,12 @@ class RepositoryManagerTest {
         verify(repository2, times(1)).save(aggregateRoot, metaData, Repository.OptimisticLock.DISABLED)
     }
 
+    @Test
+    fun getSavedEvents() {
+        val aggregateId = AggregateId(UUID.randomUUID())
+        repositoryManager.getSavedEvents(aggregateId)
+        verify(repository2, times(0)).getSavedEvents(aggregateId)
+        verify(repository2, times(0)).getSavedEvents(aggregateId)
+    }
+
 }
