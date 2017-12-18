@@ -104,20 +104,29 @@ abstract class EventStoreRepository<T : AggregateRoot> : Repository<T>() {
 
     }
 
-    private fun replayAggregateRoot(readStreamEventsCompleted: ReadStreamEventsCompleted): T {
-        val events = ArrayList<Event>()
-        var version = -1
-        val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
-        for (event: eventstore.Event in readStreamEventsCompleted.events()) {
-            val obj = event.record().data().data().value().decodeString(Charset.defaultCharset()).jsonToObject(Class.forName(event.data().eventType()))
-            val orderEvent = obj as Event
-            version = event.number().value()
-            events.add(orderEvent)
-        }
+    override fun getSavedEvents(aggregateId: AggregateId): List<Event> {
+        val message = tryReadStreamEventsFromBeginning(aggregateId)
+        return getEventsFromStream(message)
+    }
 
-        if (events.size > 0) {
+    private fun getEventsFromStream(message: ReadStreamEventsCompleted): ArrayList<Event> {
+        val events = ArrayList<Event>()
+        for (event: eventstore.Event in message.events()) {
+            val obj = event.record().data().data().value().decodeString(Charset.defaultCharset()).jsonToObject(Class.forName(event.data().eventType()))
+            events.add(obj as Event)
+        }
+        return events
+    }
+
+    private fun replayAggregateRoot(readStreamEventsCompleted: ReadStreamEventsCompleted): T {
+        val streamEvents = readStreamEventsCompleted.events()
+        val version = if (streamEvents.isEmpty) -1 else streamEvents.last().number().value()
+        val savedEvents = getEventsFromStream(readStreamEventsCompleted)
+        val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
+
+        if (!savedEvents.isEmpty()) {
             val aggregate = aggregateClass.newInstance()
-            (aggregate as T).load(events, AggregateVersion(version))
+            (aggregate as T).load(savedEvents, AggregateVersion(version))
             return aggregate
         } else {
             log.error("stream was empty: $readStreamEventsCompleted")

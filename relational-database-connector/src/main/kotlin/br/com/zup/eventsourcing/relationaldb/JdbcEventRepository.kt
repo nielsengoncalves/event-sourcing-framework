@@ -78,11 +78,10 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
         }
     }
 
-
     override fun get(aggregateId: AggregateId): T {
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
         val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? and $AGGREGATE_TYPE = ? order by " +
-                "$VERSION_COLUMN"
+            VERSION_COLUMN
         val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value, aggregateClass.canonicalName)
         if (events.isEmpty()) throw NotFoundException()
         val aggregate = aggregateClass.newInstance()
@@ -100,11 +99,25 @@ abstract class JdbcEventRepository<T : AggregateRoot> @Autowired constructor(val
     override fun getLastMetaData(aggregateId: AggregateId): MetaData {
         val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
         val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? and $AGGREGATE_TYPE = ? order by " +
-                "$VERSION_COLUMN"
+            VERSION_COLUMN
         val events = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value, aggregateClass.canonicalName)
         if (events.isEmpty()) throw NotFoundException()
         val lastEvent = events.last()
         return lastEvent.metaData.jsonToObject(MetaData::class.java)
+    }
+
+    override fun getSavedEvents(aggregateId: AggregateId): List<Event> {
+        val aggregateClass: Class<*> = Class.forName(getGenericCanonicalName())
+        val events = mutableListOf<Event>()
+        val sql = "select * from $TABLE_NAME where $AGGREGATE_ID_COLUMN = ? and $AGGREGATE_TYPE = ? order by " +
+            VERSION_COLUMN
+        val savedEvents = jdbcTemplate.query(sql, MyAggregateEventsMapper(), aggregateId.value, aggregateClass.canonicalName)
+
+        savedEvents.forEach {
+            events.add(it.event.jsonToObject(Class.forName(it.eventType)) as Event)
+        }
+
+        return events
     }
 
 }

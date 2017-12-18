@@ -5,12 +5,14 @@ import br.com.zup.eventsourcing.core.AggregateVersion
 import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.eventstore.config.BaseTest
+import br.com.zup.eventsourcing.eventstore.domain.ModifyEvent
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRepository
 import br.com.zup.eventsourcing.eventstore.domain.MyAggregateRoot
 import eventstore.WrongExpectedVersionException
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.LocalDateTime
 import java.util.*
 
 class MyAggregateRootRepositoryTest : BaseTest() {
@@ -147,6 +149,21 @@ class MyAggregateRootRepositoryTest : BaseTest() {
         myRetrievedMetaData = myAggregateRepository.getLastMetaData(aggregateID)
         assertEquals("modify", myRetrievedMetaData["teste"])
 
+    }
+
+    @Test
+    fun getSavedEvents() {
+        val aggregateID = AggregateId(UUID.randomUUID())
+        val myAggregate = MyAggregateRoot(aggregateID)
+        val dateTime = LocalDateTime.now()
+        val modifyEvent = ModifyEvent("MODIFIED", dateTime)
+        myAggregate.applyChange(modifyEvent)
+        myAggregateRepository.save(myAggregate)
+
+        myAggregateRepository.getSavedEvents(aggregateID).also {
+            assertEquals(2, it.size)
+            assertEquals(modifyEvent, it[1])
+        }
     }
 
     @Test(expected = Repository.NotFoundException::class)

@@ -4,10 +4,13 @@ import br.com.zup.eventsourcing.core.AggregateId
 import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.Repository
 import br.com.zup.eventsourcing.relationaldb.config.RepositoryBaseTest
+import br.com.zup.eventsourcing.relationaldb.domain.ModifyEvent
 import br.com.zup.eventsourcing.relationaldb.domain.MyAggregateRoot
 import br.com.zup.eventsourcing.relationaldb.domain.RepositoryOptimisticLockEnabled
+import org.junit.Assert
 import org.junit.Test
 import org.springframework.beans.factory.annotation.Autowired
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -125,6 +128,21 @@ class JdbcEventRepositoryTest : RepositoryBaseTest() {
         repositoryOptimisticLockEnabled.save(myAggregate, metaData, Repository.OptimisticLock.DISABLED)
         val newMetaData = repositoryOptimisticLockEnabled.getLastMetaData(aggregateId)
         assertEquals("teste2", newMetaData["teste"])
+    }
+
+    @Test
+    fun getSavedEvents() {
+        val aggregateID = AggregateId(UUID.randomUUID())
+        val myAggregate = MyAggregateRoot(aggregateID)
+        val dateTime = LocalDateTime.now()
+        val modifyEvent = ModifyEvent("MODIFIED", dateTime)
+        myAggregate.applyChange(modifyEvent)
+        repositoryOptimisticLockEnabled.save(myAggregate)
+
+        repositoryOptimisticLockEnabled.getSavedEvents(aggregateID).also {
+            Assert.assertEquals(2, it.size)
+            Assert.assertEquals(modifyEvent, it[1])
+        }
     }
 
     @Test(expected = Repository.NotFoundException::class)

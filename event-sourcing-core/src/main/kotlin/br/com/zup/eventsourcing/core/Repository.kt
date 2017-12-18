@@ -6,6 +6,7 @@ abstract class Repository<T : AggregateRoot> {
     abstract fun save(aggregateRoot: T, lock: Repository.OptimisticLock = OptimisticLock.ENABLED)
     abstract fun save(aggregateRoot: T, metaData: MetaData, lock: Repository.OptimisticLock = OptimisticLock.ENABLED)
     abstract fun get(aggregateId: AggregateId): T
+    abstract fun getSavedEvents(aggregateId: AggregateId): List<Event>
     abstract fun getLastMetaData(aggregateId: AggregateId): MetaData
 
 

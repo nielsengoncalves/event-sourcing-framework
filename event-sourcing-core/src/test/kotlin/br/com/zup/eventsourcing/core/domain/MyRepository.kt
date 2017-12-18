@@ -1,11 +1,16 @@
 package br.com.zup.eventsourcing.core.domain
 
 import br.com.zup.eventsourcing.core.AggregateId
+import br.com.zup.eventsourcing.core.Event
 import br.com.zup.eventsourcing.core.MetaData
 import br.com.zup.eventsourcing.core.Repository
 
 
 class MyRepository : Repository<MyAggregateRoot>() {
+    override fun getSavedEvents(aggregateId: AggregateId): List<Event> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun save(aggregateRoot: MyAggregateRoot, metaData: MetaData, lock: OptimisticLock) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
