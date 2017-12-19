@@ -69,7 +69,7 @@ class RepositoryManagerTest {
     fun getSavedEvents() {
         val aggregateId = AggregateId(UUID.randomUUID())
         repositoryManager.getSavedEvents(aggregateId)
-        verify(repository2, times(0)).getSavedEvents(aggregateId)
+        verify(repository1, times(1)).getSavedEvents(aggregateId)
         verify(repository2, times(0)).getSavedEvents(aggregateId)
     }
 
