@@ -5,7 +5,7 @@
 
     <groupId>br.com.zup</groupId>
     <artifactId>event-sourcing-framework</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.1-SNAPSHOT</version>
     <modules>
         <module>event-sourcing-core</module>
         <module>event-store-connector</module>
@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>event-sourcing-core</artifactId>
-                <version>${project.version}</version>
+                <version>1.0.3</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
@@ -275,7 +275,7 @@
         <connection>scm:git@github.com:ZupIT/event-sourcing-framework</connection>
         <url>https://github.com/ZupIT/event-sourcing-framework</url>
         <developerConnection>scm:git:git@github.com:ZupIT/event-sourcing-framework</developerConnection>
-        <tag>1.1.0</tag>
+        <tag>1.0.0</tag>
     </scm>
 
 </project>

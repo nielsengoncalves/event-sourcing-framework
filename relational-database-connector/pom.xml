@@ -3,12 +3,13 @@
     <parent>
         <artifactId>event-sourcing-framework</artifactId>
         <groupId>br.com.zup</groupId>
-        <version>1.1.0</version>
+        <version>1.1.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>relational-database-connector</artifactId>
+  <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>br.com.zup relational-database-connector</name>
@@ -73,8 +74,4 @@
             </exclusions>
         </dependency>
     </dependencies>
-
-  <scm>
-    <tag>1.1.0</tag>
-  </scm>
 </project>
