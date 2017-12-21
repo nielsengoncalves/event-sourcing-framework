@@ -3,12 +3,11 @@
     <parent>
         <artifactId>event-sourcing-framework</artifactId>
         <groupId>br.com.zup</groupId>
-        <version>1.1.1-SNAPSHOT</version>
+        <version>1.1.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>event-store-connector</artifactId>
-  <version>1.0.3</version>
 
     <dependencies>
         <dependency>

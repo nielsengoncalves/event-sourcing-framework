@@ -5,7 +5,7 @@
 
     <groupId>br.com.zup</groupId>
     <artifactId>event-sourcing-framework</artifactId>
-    <version>1.1.1-SNAPSHOT</version>
+    <version>1.1.0</version>
     <modules>
         <module>event-sourcing-core</module>
         <module>event-store-connector</module>
@@ -38,7 +38,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>event-sourcing-core</artifactId>
-                <version>1.0.3</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
